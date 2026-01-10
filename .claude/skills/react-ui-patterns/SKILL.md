@@ -1,9 +1,17 @@
 ---
 name: react-ui-patterns
-description: Modern React UI patterns for loading states, error handling, and data fetching. Use when building UI components, handling async data, or managing UI states.
+description: Modern React UI patterns for loading states, error handling, and data fetching with TanStack Query and shadcn/ui. Use when building UI components, handling async data, or managing UI states.
 ---
 
-# React UI Patterns
+# React UI Patterns - Fittest.ai Stack
+
+## Tech Stack Context
+
+- **Data Fetching**: TanStack Query (React Query)
+- **UI Components**: shadcn/ui (Radix + Tailwind CSS)
+- **Forms**: React Hook Form + Zod
+- **Icons**: Lucide React
+- **State**: Zustand (client state), TanStack Query (server state)
 
 ## Core Principles
 
@@ -13,6 +21,8 @@ description: Modern React UI patterns for loading states, error handling, and da
 4. **Progressive disclosure** - Show content as it becomes available
 5. **Graceful degradation** - Partial data is better than no data
 
+---
+
 ## Loading State Patterns
 
 ### The Golden Rule
@@ -20,19 +30,22 @@ description: Modern React UI patterns for loading states, error handling, and da
 **Show loading indicator ONLY when there's no data to display.**
 
 ```typescript
-// CORRECT - Only show loading when no data exists
-const { data, loading, error } = useGetItemsQuery();
+// CORRECT - Only show loading when no data exists (TanStack Query)
+const { data, isLoading, error, refetch } = useQuery({
+  queryKey: ['items'],
+  queryFn: fetchItems,
+});
 
 if (error) return <ErrorState error={error} onRetry={refetch} />;
-if (loading && !data) return <LoadingState />;
-if (!data?.items.length) return <EmptyState />;
+if (isLoading && !data) return <LoadingState />;
+if (!data?.length) return <EmptyState />;
 
-return <ItemList items={data.items} />;
+return <ItemList items={data} />;
 ```
 
 ```typescript
 // WRONG - Shows spinner even when we have cached data
-if (loading) return <LoadingState />; // Flashes on refetch!
+if (isLoading) return <LoadingState />; // Flashes on refetch!
 ```
 
 ### Loading State Decision Tree
@@ -52,24 +65,39 @@ Do we have data?
   → No: Show loading (fallback)
 ```
 
-### Skeleton vs Spinner
+### Skeleton vs Spinner (shadcn/ui)
 
-| Use Skeleton When    | Use Spinner When      |
-| -------------------- | --------------------- |
-| Known content shape  | Unknown content shape |
-| List/card layouts    | Modal actions         |
-| Initial page load    | Button submissions    |
-| Content placeholders | Inline operations     |
+| Use Skeleton When    | Use Spinner When      | shadcn Component |
+| -------------------- | --------------------- | ---------------- |
+| Known content shape  | Unknown content shape | `<Skeleton />`   |
+| List/card layouts    | Modal actions         | `<Skeleton />`   |
+| Initial page load    | Button submissions    | `<Skeleton />`   |
+| Content placeholders | Inline operations     | Spinner (custom) |
+
+**Skeleton Example:**
+```tsx
+import { Skeleton } from "@/components/ui/skeleton"
+
+const LoadingState = () => (
+  <div className="space-y-4">
+    <Skeleton className="h-12 w-full" />
+    <Skeleton className="h-12 w-full" />
+    <Skeleton className="h-12 w-full" />
+  </div>
+)
+```
+
+---
 
 ## Error Handling Patterns
 
 ### The Error Handling Hierarchy
 
 ```
-1. Inline error (field-level) → Form validation errors
-2. Toast notification → Recoverable errors, user can retry
-3. Error banner → Page-level errors, data still partially usable
-4. Full error screen → Unrecoverable, needs user action
+1. Inline error (field-level) → Form validation errors (Zod + React Hook Form)
+2. Toast notification → Recoverable errors, user can retry (shadcn Toast)
+3. Error banner → Page-level errors, data still partially usable (shadcn Alert)
+4. Full error screen → Unrecoverable, needs user action (Custom component)
 ```
 
 ### Always Show Errors
@@ -77,28 +105,46 @@ Do we have data?
 **CRITICAL: Never swallow errors silently.**
 
 ```typescript
-// CORRECT - Error always surfaced to user
-const [createItem, { loading }] = useCreateItemMutation({
-  onCompleted: () => {
-    toast.success({ title: "Item created" });
+// CORRECT - Error always surfaced to user (TanStack Query mutation)
+import { useMutation } from '@tanstack/react-query';
+import { useToast } from "@/components/ui/use-toast";
+
+const { toast } = useToast();
+
+const createItemMutation = useMutation({
+  mutationFn: createItem,
+  onSuccess: () => {
+    toast({
+      title: "Success",
+      description: "Item created successfully",
+    });
   },
   onError: (error) => {
     console.error("createItem failed:", error);
-    toast.error({ title: "Failed to create item" });
+    toast({
+      variant: "destructive",
+      title: "Error",
+      description: "Failed to create item. Please try again.",
+    });
   },
 });
 
 // WRONG - Error silently caught, user has no idea
-const [createItem] = useCreateItemMutation({
+const createItemMutation = useMutation({
+  mutationFn: createItem,
   onError: (error) => {
     console.error(error); // User sees nothing!
   },
 });
 ```
 
-### Error State Component Pattern
+### Error State Component Pattern (shadcn/ui)
 
-```typescript
+```tsx
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+
 interface ErrorStateProps {
   error: Error;
   onRetry?: () => void;
@@ -106,25 +152,36 @@ interface ErrorStateProps {
 }
 
 const ErrorState = ({ error, onRetry, title }: ErrorStateProps) => (
-  <div className="error-state">
-    <Icon name="exclamation-circle" />
-    <h3>{title ?? "Something went wrong"}</h3>
-    <p>{error.message}</p>
-    {onRetry && <Button onClick={onRetry}>Try Again</Button>}
-  </div>
+  <Alert variant="destructive">
+    <AlertCircle className="h-4 w-4" />
+    <AlertTitle>{title ?? "Something went wrong"}</AlertTitle>
+    <AlertDescription className="space-y-2">
+      <p>{error.message}</p>
+      {onRetry && (
+        <Button variant="outline" size="sm" onClick={onRetry}>
+          Try Again
+        </Button>
+      )}
+    </AlertDescription>
+  </Alert>
 );
 ```
 
-## Button State Patterns
+---
+
+## Button State Patterns (shadcn/ui Button)
 
 ### Button Loading State
 
 ```tsx
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+
 <Button
   onClick={handleSubmit}
-  isLoading={isSubmitting}
-  disabled={!isValid || isSubmitting}
+  disabled={isSubmitting || !isValid}
 >
+  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
   Submit
 </Button>
 ```
@@ -135,19 +192,22 @@ const ErrorState = ({ error, onRetry, title }: ErrorStateProps) => (
 
 ```tsx
 // CORRECT - Button disabled while loading
+import { Button } from "@/components/ui/button";
+
 <Button
-  disabled={isSubmitting}
-  isLoading={isSubmitting}
-  onClick={handleSubmit}
+  disabled={mutation.isPending}
+  onClick={() => mutation.mutate(data)}
 >
-  Submit
+  {mutation.isPending ? "Submitting..." : "Submit"}
 </Button>
 
-// WRONG - User can tap multiple times
-<Button onClick={handleSubmit}>
-  {isSubmitting ? 'Submitting...' : 'Submit'}
+// WRONG - User can click multiple times
+<Button onClick={() => mutation.mutate(data)}>
+  Submit
 </Button>
 ```
+
+---
 
 ## Empty States
 
@@ -157,67 +217,205 @@ Every list/collection MUST have an empty state:
 
 ```tsx
 // WRONG - No empty state
-return <FlatList data={items} />;
+return data.map(item => <ItemCard key={item.id} item={item} />);
 
 // CORRECT - Explicit empty state
-return <FlatList data={items} ListEmptyComponent={<EmptyState />} />;
+return data.length > 0 ? (
+  data.map(item => <ItemCard key={item.id} item={item} />)
+) : (
+  <EmptyState />
+);
 ```
 
-### Contextual Empty States
+### Contextual Empty States (shadcn/ui)
 
 ```tsx
+import { Search, PlusCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
 // Search with no results
-<EmptyState
-  icon="search"
-  title="No results found"
-  description="Try different search terms"
-/>
+const SearchEmptyState = () => (
+  <div className="flex flex-col items-center justify-center p-8 text-center">
+    <Search className="h-12 w-12 text-muted-foreground mb-4" />
+    <h3 className="text-lg font-semibold">No results found</h3>
+    <p className="text-sm text-muted-foreground">
+      Try different search terms
+    </p>
+  </div>
+);
 
 // List with no items yet
-<EmptyState
-  icon="plus-circle"
-  title="No items yet"
-  description="Create your first item"
-  action={{ label: 'Create Item', onClick: handleCreate }}
-/>
+const ListEmptyState = ({ onCreate }: { onCreate: () => void }) => (
+  <div className="flex flex-col items-center justify-center p-8 text-center">
+    <PlusCircle className="h-12 w-12 text-muted-foreground mb-4" />
+    <h3 className="text-lg font-semibold">No items yet</h3>
+    <p className="text-sm text-muted-foreground mb-4">
+      Create your first item to get started
+    </p>
+    <Button onClick={onCreate}>Create Item</Button>
+  </div>
+);
 ```
 
-## Form Submission Pattern
+---
+
+## Form Submission Pattern (React Hook Form + Zod)
 
 ```tsx
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
+const formSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+});
+
 const MyForm = () => {
-  const [submit, { loading }] = useSubmitMutation({
-    onCompleted: handleSuccess,
-    onError: handleError,
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+    },
   });
 
-  const handleSubmit = async () => {
-    if (!isValid) {
-      toast.error({ title: "Please fix errors" });
-      return;
-    }
-    await submit({ variables: { input: values } });
+  const mutation = useMutation({
+    mutationFn: submitData,
+    onSuccess: () => {
+      toast({ title: "Success!" });
+      form.reset();
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    },
+  });
+
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    mutation.mutate(values);
   };
 
   return (
-    <form>
-      <Input
-        value={values.name}
-        onChange={handleChange("name")}
-        error={touched.name ? errors.name : undefined}
-      />
-      <Button
-        type="submit"
-        onClick={handleSubmit}
-        disabled={!isValid || loading}
-        isLoading={loading}
-      >
-        Submit
-      </Button>
-    </form>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input type="email" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button
+          type="submit"
+          disabled={!form.formState.isValid || mutation.isPending}
+        >
+          {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Submit
+        </Button>
+      </form>
+    </Form>
   );
 };
 ```
+
+---
+
+## TanStack Query Patterns
+
+### Query with All States
+
+```tsx
+import { useQuery } from '@tanstack/react-query';
+
+const ItemList = () => {
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['items'],
+    queryFn: fetchItems,
+  });
+
+  if (error) return <ErrorState error={error} onRetry={refetch} />;
+  if (isLoading && !data) return <Skeleton />;
+  if (!data?.length) return <EmptyState />;
+
+  return (
+    <div className="grid gap-4">
+      {data.map(item => (
+        <ItemCard key={item.id} item={item} />
+      ))}
+    </div>
+  );
+};
+```
+
+### Mutation with Toast Feedback
+
+```tsx
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToast } from "@/components/ui/use-toast";
+
+const useCreateItem = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: createItem,
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ['items'] });
+      toast({
+        title: "Success",
+        description: "Item created successfully",
+      });
+    },
+    onError: (error) => {
+      console.error("createItem failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to create item",
+      });
+    },
+  });
+};
+```
+
+---
 
 ## Anti-Patterns
 
@@ -225,10 +423,10 @@ const MyForm = () => {
 
 ```typescript
 // WRONG - Spinner when data exists (causes flash)
-if (loading) return <Spinner />;
+if (isLoading) return <Spinner />;
 
 // CORRECT - Only show loading without data
-if (loading && !data) return <Spinner />;
+if (isLoading && !data) return <Spinner />;
 ```
 
 ### Error Handling
@@ -236,49 +434,64 @@ if (loading && !data) return <Spinner />;
 ```typescript
 // WRONG - Error swallowed
 try {
-  await mutation();
+  await mutation.mutateAsync();
 } catch (e) {
   console.log(e); // User has no idea!
 }
 
 // CORRECT - Error surfaced
-onError: (error) => {
-  console.error("operation failed:", error);
-  toast.error({ title: "Operation failed" });
-};
+mutation.mutate(data, {
+  onError: (error) => {
+    console.error("operation failed:", error);
+    toast({
+      variant: "destructive",
+      title: "Operation failed",
+    });
+  },
+});
 ```
 
 ### Button States
 
-```typescript
+```tsx
 // WRONG - Button not disabled during submission
 <Button onClick={submit}>Submit</Button>
 
 // CORRECT - Disabled and shows loading
-<Button onClick={submit} disabled={loading} isLoading={loading}>
+<Button disabled={isPending} onClick={submit}>
+  {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
   Submit
 </Button>
 ```
+
+---
 
 ## Checklist
 
 Before completing any UI component:
 
 **UI States:**
-
-- [ ] Error state handled and shown to user
-- [ ] Loading state shown only when no data exists
-- [ ] Empty state provided for collections
+- [ ] Error state handled and shown to user (shadcn Alert or Toast)
+- [ ] Loading state shown only when no data exists (Skeleton or Spinner)
+- [ ] Empty state provided for collections (custom with lucide icons)
 - [ ] Buttons disabled during async operations
-- [ ] Buttons show loading indicator when appropriate
+- [ ] Buttons show loading indicator when appropriate (Loader2 icon)
 
 **Data & Mutations:**
-
 - [ ] Mutations have onError handler
-- [ ] All user actions have feedback (toast/visual)
+- [ ] All user actions have feedback (shadcn Toast)
+- [ ] Query keys defined properly
+- [ ] Cache invalidation on mutations
+
+**Forms:**
+- [ ] Zod schema defined for validation
+- [ ] React Hook Form integrated
+- [ ] Inline validation errors shown
+- [ ] Submit button disabled when invalid
+
+---
 
 ## Integration with Other Skills
 
-- **graphql-schema**: Use mutation patterns with proper error handling
 - **testing-patterns**: Test all UI states (loading, error, empty, success)
-- **formik-patterns**: Apply form submission patterns
+- **systematic-debugging**: Use React Query DevTools for debugging
