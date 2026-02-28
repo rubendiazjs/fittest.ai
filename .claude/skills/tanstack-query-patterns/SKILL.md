@@ -8,7 +8,7 @@ description: TanStack Query (React Query) patterns for data fetching, caching, a
 ## Tech Stack Context
 
 - **Data Library**: TanStack Query v5 (React Query)
-- **Backend**: Direct API calls (Claude API), Future: Supabase
+- **Backend**: Supabase (PostgreSQL + Auth)
 - **Client State**: Zustand (for UI state)
 - **Server State**: TanStack Query (for API data)
 
@@ -502,6 +502,7 @@ function App() {
 
 ## Integration with Other Skills
 
+- **supabase-patterns**: All data fetching uses Supabase client
 - **react-ui-patterns**: Loading/error/empty states for queries
 - **systematic-debugging**: Use DevTools to debug cache issues
 - **testing-patterns**: Mock queries and mutations in tests
