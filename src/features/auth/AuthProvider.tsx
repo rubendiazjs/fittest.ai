@@ -77,28 +77,59 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   useEffect(() => {
-    // Set up the listener FIRST to avoid race conditions with getSession.
-    // onAuthStateChange fires INITIAL_SESSION on setup, which gives us the
-    // current session without needing a separate getSession() call.
+    let mounted = true
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
-        let role: UserRole | null = null
-
-        if (session?.user) {
-          role = await fetchUserRole(session.user.id)
-        }
-
+        if (!mounted) return
+        // Unblock the UI immediately — we know if user is logged in or not
         setState({
           session,
           user: session?.user ?? null,
-          role,
+          role: null,
           isLoading: false,
           error: null,
         })
+
+        // Fetch role OUTSIDE the onAuthStateChange lock.
+        //
+        // Supabase JS v2 holds an internal lock while calling onAuthStateChange
+        // callbacks (via _acquirelock → _notifyAllSubscribers). Any Supabase API
+        // call inside the callback (e.g. supabase.from(...).select()) internally
+        // calls getSession(), which tries to re-acquire the same lock → deadlock.
+        // All subsequent Supabase queries also wait for the lock, causing a
+        // permanent loading spinner.
+        //
+        // By scheduling fetchUserRole with setTimeout(0), the callback returns
+        // immediately, Supabase releases the lock, and then fetchUserRole runs
+        // freely in the next event loop tick.
+        if (session?.user) {
+          const userId = session.user.id
+          setTimeout(async () => {
+            if (!mounted) return
+            const role = await fetchUserRole(userId)
+            if (mounted) setState((prev) => ({ ...prev, role }))
+          }, 0)
+        }
       }
     )
 
+    // Safety net: if onAuthStateChange's INITIAL_SESSION is delayed (e.g. Supabase
+    // is refreshing an expired token), unblock the UI after 10 s.
+    //
+    // NOTE: We deliberately do NOT call getSession() here. In React 19 Strict Mode,
+    // effects run twice, which would trigger two concurrent getSession() calls.
+    // Supabase JS v2 uses an internal lock for token operations — two concurrent
+    // calls deadlock it, causing all subsequent authenticated queries to hang forever.
+    // onAuthStateChange fires reliably (SIGNED_IN / SIGNED_OUT / INITIAL_SESSION),
+    // so the fallback is just this timeout.
+    const safetyTimeout = setTimeout(() => {
+      if (mounted) setState((prev) => prev.isLoading ? { ...prev, isLoading: false } : prev)
+    }, 10_000)
+
     return () => {
+      mounted = false
+      clearTimeout(safetyTimeout)
       subscription.unsubscribe()
     }
   }, [fetchUserRole])
