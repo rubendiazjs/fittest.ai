@@ -1,4 +1,13 @@
+import { config } from 'dotenv'
 import { defineConfig, devices } from '@playwright/test'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+// Load .env.test for e2e tests
+config({ path: path.resolve(process.cwd(), '.env.test') })
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const authFile = path.join(__dirname, '.auth', 'user.json')
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -23,7 +32,6 @@ export default defineConfig({
   ],
 
   use: {
-    // Dev server runs on 5174 (Vite default for this project)
     baseURL: process.env.BASE_URL || 'http://localhost:5173',
 
     // Capture artifacts on failure for easier debugging
@@ -36,14 +44,32 @@ export default defineConfig({
     navigationTimeout: 30_000,
   },
 
+  // Default expect assertion timeout — increase from 5s (default) to match actionTimeout.
+  // Needed for assertions that depend on real Supabase round-trips (e.g. signOut redirect).
+  expect: { timeout: 10_000 },
+
   projects: [
-    // Sprint 0: Chromium only — broaden to Firefox/WebKit later
+    // Auth setup — runs once to save storageState
+    {
+      name: 'setup',
+      testMatch: /auth\.setup\.ts/,
+    },
+
+    // Main test suite — depends on setup, reuses auth state
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: authFile,
+      },
+      dependencies: ['setup'],
+      testIgnore: /auth\.setup\.ts/,
     },
   ],
 
-  // No webServer block — start `npm run dev` manually before running tests.
-  // Add a webServer block here once CI is wired up.
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://localhost:5173',
+    reuseExistingServer: !process.env.CI,
+  },
 })
