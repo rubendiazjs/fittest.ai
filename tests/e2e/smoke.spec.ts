@@ -1,5 +1,8 @@
 import { test, expect } from '@playwright/test'
 
+// Smoke tests run unauthenticated
+test.use({ storageState: { cookies: [], origins: [] } })
+
 /**
  * Smoke test — verifies the home page loads and the auth gate renders
  * correctly for an unauthenticated visitor.
