@@ -22,3 +22,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Playwright auth state
+.auth/
+playwright-report/
+
+# Environment variables (contain secrets)
+.env
+.env.test
+.env.local
+.env.*.local
