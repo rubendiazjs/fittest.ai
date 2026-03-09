@@ -49,6 +49,7 @@ export function useDailyCheckin(options: UseDailyCheckinOptions = {}) {
   const questionsQuery = useQuery({
     queryKey: checkinKeys.questions(),
     queryFn: fetchQuestions,
+    enabled: !!userId,
     staleTime: 24 * 60 * 60 * 1000, // 24 hours - questions rarely change
   })
 
