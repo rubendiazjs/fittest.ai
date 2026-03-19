@@ -134,8 +134,8 @@ This project is built using **agentic development** principles:
 ## Getting Started
 
 ### Prerequisites
-- Node.js 24+ (using nvm recommended)
-- npm 11+
+- Node.js `20.19.0` or newer in the Vite-supported ranges (`^20.19.0 || >=22.12.0`)
+- npm `10+`
 
 ### Installation
 
@@ -144,12 +144,17 @@ This project is built using **agentic development** principles:
 git clone https://github.com/rubendiazjs/fittest.ai.git
 cd fittest.ai
 
+# Use the repo-pinned Node version
+nvm use
+
 # Install dependencies
 npm install
 
 # Start development server
 npm run dev
 ```
+
+If you use `nvm`, the repo pins `20.19.0` in `.nvmrc`.
 
 Visit `http://localhost:5174`
 
