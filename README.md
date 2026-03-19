@@ -1,143 +1,99 @@
-# Fittest.ai 🎾
+# Fittest.ai
 
-> AI-powered training session generator for racket sports athletes
+This checkout is currently a minimal Vite + React frontend starter, not a full athlete product.
 
-## Vision
+The live app renders a single centered screen from [src/App.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/App.tsx) with:
 
-Fittest.ai is a training session generator designed to help racket sports athletes (starting with padel) get scientifically-backed, personalized training programs. Built with agentic development principles, this project serves as both a production application and a learning playground for advanced AI-assisted development workflows.
+- the `Fittest.ai` heading
+- the subtitle `Your agentic development playground`
+- one shadcn `Button` that triggers `alert('Hello from shadcn!')`
 
-## Current Status: MVP - Padel Training Generator
+There is no routing, no API integration, no persisted state, no forms, no auth flow, no Supabase client, and no test suite in the current repository state.
 
-**Phase 1 (Current):** Simple training session generator for padel players
-- Generate customized training sessions
-- Based on athlete level (beginner, intermediate, advanced)
-- Aligned with training phase (pre-season, competition, transition)
-- Scientifically grounded in sports performance methodology
+## Source Of Truth
 
-## Core Features (Phase 1)
+When docs and code disagree, trust the code in this order:
 
-### Session Generation
-- **Personalized workouts** based on:
-  - Athlete level
-  - Current training phase
-  - Specific goals (power, agility, endurance, etc.)
-  - Available equipment
-- **Complete session structure**:
-  - Progressive warm-up
-  - Main training block
-  - Proper cool-down
-  - Coaching notes and corrections
+1. [package.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/package.json)
+2. [src/App.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/App.tsx)
+3. [src/main.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/main.tsx)
+4. [vite.config.ts](/Users/ruben/conductor/workspaces/fittest.ai/dublin/vite.config.ts)
+5. [components.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/components.json)
+6. [.nvmrc](/Users/ruben/conductor/workspaces/fittest.ai/dublin/.nvmrc)
+7. [docs/SETUP.md](/Users/ruben/conductor/workspaces/fittest.ai/dublin/docs/SETUP.md)
+8. [docs/ARCHITECTURE.md](/Users/ruben/conductor/workspaces/fittest.ai/dublin/docs/ARCHITECTURE.md)
 
-### Scientific Foundation
-- Based on periodization principles (Bompa, Issurin)
-- Padel-specific movement patterns
-- Injury prevention integrated
-- Progressive overload applied correctly
+Some docs under `docs/`, including feature-planning material, still describe a broader training-product direction. Treat those as planning or historical context unless they are brought back in sync with the code.
 
-## Tech Stack
+## Stack
 
-### Frontend
-- **Framework:** React 18 + TypeScript
-- **Build Tool:** Vite
-- **UI Components:** shadcn/ui (Radix + Tailwind CSS)
-- **State Management:** TanStack Query + Zustand
-- **Forms:** React Hook Form + Zod
-- **Icons:** Lucide React
+- React 19
+- TypeScript 5
+- Vite via `rolldown-vite`
+- Tailwind CSS
+- shadcn/ui conventions with Radix Slot
+- ESLint flat config
 
-### AI Integration
-- **Primary Model:** Claude Sonnet 4.5 (Anthropic)
-- **Architecture:** Agentic workflows with MCP
-- **Context:** Custom training knowledge base
+## Project Layout
 
-### Development Approach
-- **Methodology:** Agentic development + Vibe engineering
-- **MCP Servers:** Filesystem, GitHub, Shell
-- **AI Assistants:** Cursor, Claude Desktop
-- **Version Control:** Git + GitHub
-
-## Project Structure
-
-```
-fittest.ai/
-├── docs/                          # Documentation
-│   ├── training-context.md        # Full sports science reference
-│   ├── ai-agent-context.md        # Condensed context for AI agents
-│   └── ...
+```text
+.
 ├── src/
-│   ├── features/                  # Feature-based organization
-│   │   └── session-generator/     # Training session generation
-│   ├── components/                # Shared components
-│   │   └── ui/                    # shadcn components
-│   ├── lib/                       # Utilities and config
-│   ├── hooks/                     # Shared hooks
-│   └── stores/                    # Zustand stores
-└── ...
+│   ├── App.tsx                # Current single-screen UI
+│   ├── main.tsx               # React entry point
+│   ├── components/ui/         # shadcn-style UI primitives
+│   ├── lib/utils.ts           # `cn()` helper
+│   ├── App.css
+│   └── index.css              # Tailwind layers and CSS variables
+├── docs/
+│   ├── SETUP.md
+│   └── ARCHITECTURE.md
+├── .claude/commands/          # Local Claude prompt helpers
+├── components.json            # shadcn aliases/config
+├── tailwind.config.js
+├── vite.config.ts
+└── package.json
 ```
 
-## Documentation
+## Scripts
 
-### For Developers
-- **[Training Context](./docs/training-context.md)** - Complete sports science foundation for padel training
-- Explains periodization, exercise selection, safety considerations
-- Reference for understanding business logic
+From [package.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/package.json):
 
-### For AI Agents
-- **[AI Agent Context](./docs/ai-agent-context.md)** - Condensed prompt context
-- Quick reference for AI-assisted development
-- Rules and patterns for session generation
+- `npm run dev` starts the Vite dev server
+- `npm run build` runs `tsc -b` and builds for production
+- `npm run lint` runs ESLint
+- `npm run preview` serves the production build locally
 
-## Roadmap
+No `test`, `type-check`, `playwright`, `supabase`, or codegen scripts are defined.
 
-### Phase 1: MVP ✓ (Current)
-- [x] Project setup
-- [ ] Session generator UI
-- [ ] AI-powered session generation
-- [ ] Basic personalization (level, phase, goal)
-- [ ] Session display and export
+## Environment Variables
 
-### Phase 2: Enhanced Personalization
-- [ ] User profiles and history
-- [ ] Progress tracking
-- [ ] Session feedback loop
-- [ ] Equipment-based filtering
-- [ ] Injury history consideration
+There is no checked-in `.env.example`, and the app code does not read from `import.meta.env` or `process.env`.
 
-### Phase 3: Multi-Sport Expansion
-- [ ] Tennis support
-- [ ] Squash support
-- [ ] Badminton support
-- [ ] Sport-specific adaptations
+Current requirement: no environment variables are needed to run the app.
 
-### Phase 4: Advanced Features
-- [ ] Periodization planning (full season)
-- [ ] Performance analytics
-- [ ] Video exercise library
-- [ ] Coach collaboration tools
-- [ ] Mobile app
+## Auth, Supabase, And Backend Reality
 
-## Development Philosophy
+The current app does not include:
 
-This project is built using **agentic development** principles:
+- Supabase client setup
+- Supabase Edge Functions
+- authentication screens or session handling
+- athlete onboarding flows
+- daily check-ins
+- warm-up generation
 
-- **AI-First:** Leveraging Claude and Cursor for rapid development
-- **MCP Integration:** Direct tool access for AI agents
-- **Iterative:** Small increments, fast feedback loops
-- **Documentation-Driven:** Context is code
-- **Learning-Oriented:** Exploring cutting-edge AI development patterns
+If those features exist elsewhere, they are not present in this checkout and should not be documented as implemented.
 
-### Key Principles
-1. Start simple, iterate based on real usage
-2. Let AI handle boilerplate, humans handle architecture
-3. Document for both humans and AI agents
-4. Prioritize working software over perfect planning
+## Testing Reality
+
+There is no Playwright config, no `tests/` directory, and no frontend test runner configured in `package.json`.
+
+Current testing posture: manual verification in the browser plus `npm run build` and `npm run lint`.
 
 ## Getting Started
 
-### Prerequisites
-- Node.js `20.19.0` or newer in the Vite-supported ranges (`^20.19.0 || >=22.12.0`)
-- npm `10+`
-
-### Installation
+The repo now pins Node `20.19.0` in [.nvmrc](/Users/ruben/conductor/workspaces/fittest.ai/dublin/.nvmrc), and [package.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/package.json) requires Node `^20.19.0 || >=22.12.0` with npm `10+`. In this workspace, `npm run build` and `npm run lint` failed on Node `16.20.2`, so use a supported runtime before starting.
 
 ```bash
 # Clone the repository
@@ -149,55 +105,11 @@ nvm use
 
 # Install dependencies
 npm install
-
-# Start development server
 npm run dev
 ```
 
-If you use `nvm`, the repo pins `20.19.0` in `.nvmrc`.
+Vite will print the local URL it chose, usually `http://localhost:5173`.
 
-Visit `http://localhost:5174`
+## For AI Agents
 
-### Development with AI
-
-This project is designed for AI-assisted development:
-
-1. **Read the context docs** in `/docs/` before generating code
-2. **Use MCP tools** for file operations and git
-3. **Refer to training-context.md** for domain logic
-4. **Follow ai-agent-context.md** for session generation
-
-## Contributing
-
-This is currently a personal learning project, but feedback and suggestions are welcome!
-
-### For AI Agents Contributing
-
-Before generating code:
-1. Read `/docs/training-context.md` for domain understanding
-2. Reference `/docs/ai-agent-context.md` for generation rules
-3. Follow the established project structure
-4. Ensure scientific accuracy in training logic
-
-## License
-
-MIT
-
-## Author
-
-**Ruben Diaz** - Tech Lead specializing in agentic development and AI-powered applications
-
-## Acknowledgments
-
-- Sports science research from padel and racket sports communities
-- Anthropic's Claude for AI capabilities
-- The MCP protocol for agent interoperability
-- shadcn/ui for beautiful components
-
----
-
-**Note:** This project serves dual purposes:
-1. **Product:** Helping athletes train better
-2. **Learning:** Mastering agentic development, MCP, and AI-first workflows
-
-Both goals inform the development approach and architecture decisions.
+Read [CLAUDE.md](/Users/ruben/conductor/workspaces/fittest.ai/dublin/CLAUDE.md) first. It summarizes what exists, what does not, and which files to inspect before making changes.

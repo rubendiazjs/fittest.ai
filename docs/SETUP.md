@@ -1,382 +1,118 @@
-# Setup Guide - Fittest.ai
+# Setup
+
+This guide reflects the current repository state. It does not assume Supabase, auth, Playwright, or feature modules because those are not present in this checkout.
 
 ## Prerequisites
 
-### Required Software
-- **Node.js**: `20.19.0` or newer in the supported ranges `^20.19.0 || >=22.12.0`
-- **npm**: `10+`
-- **nvm**: Recommended for Node version management
-- **Git**: For version control
+- Node.js `20.19.0` or newer in the supported ranges `^20.19.0 || >=22.12.0`
+- npm `10+`
+- `nvm` recommended
+- Git
 
-### Recommended Tools
-- **Cursor IDE** or **VS Code**: For development
-- **Claude Desktop**: For AI-assisted development
-- **Warp Terminal**: Enhanced terminal experience (optional)
+The repo pins Node `20.19.0` in [.nvmrc](/Users/ruben/conductor/workspaces/fittest.ai/dublin/.nvmrc) and declares the same supported runtime family in [package.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/package.json). In this workspace, Node `16.20.2` produced engine warnings and failed both `npm run lint` and `npm run build`.
 
-### Accounts Needed (Future)
-- GitHub account (for contributing)
-- Supabase account (when we add database - Phase 2)
-- Vercel account (when we deploy - Phase 4)
-
----
-
-## Step 1: Install Node.js with nvm
-
-### Install nvm
-```bash
-# macOS/Linux
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-
-# Restart your terminal, then:
-nvm --version  # Verify installation
-```
-
-### Install the repo-pinned Node version
-```bash
-nvm install 20.19.0
-nvm use 20.19.0
-nvm alias default 20.19.0  # Optional
-
-# Verify
-node -v  # Should show v20.19.0 or another supported version
-npm -v   # Should show npm 10+
-```
-
----
-
-## Step 2: Clone the Repository
+## Install
 
 ```bash
-# Clone the repo
-git clone https://github.com/rubendiazjs/fittest.ai.git
-cd fittest.ai
-
-# Verify you're on main branch
-git branch  # Should show * main
-```
-
----
-
-## Step 3: Install Dependencies
-
-```bash
-# Make sure you're using the repo-pinned Node version
 nvm use
-
-# Install all dependencies
 npm install
-
-# This installs:
-# - React, TypeScript, Vite
-# - Tailwind CSS, shadcn/ui
-# - TanStack Query, Zustand
-# - React Hook Form, Zod
-# - Lucide React icons
 ```
 
-**Expected time**: 2-3 minutes depending on internet speed
+## Run The App
 
----
-
-## Step 4: Verify Installation
-
-### Run Development Server
 ```bash
 npm run dev
 ```
 
-**Expected output**:
-```
-VITE v5.x.x  ready in XXX ms
+Open the local URL printed by Vite. On a typical machine this is `http://localhost:5173`.
 
-➜  Local:   http://localhost:5174/
-➜  Network: use --host to expose
-```
+What you should see:
 
-### Open in Browser
-Navigate to `http://localhost:5174/`
+- a centered `Fittest.ai` title
+- the subtitle `Your agentic development playground`
+- a `Click Me` button
+- a browser alert when the button is pressed
 
-You should see:
-- A page with "Fittest.ai" title
-- Text: "Your agentic development playground"
-- A button that says "Click Me"
-- When clicked, an alert appears
+The UI is defined in [src/App.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/App.tsx).
 
-**If you see this → Setup is complete! ✅**
+## Available Scripts
 
----
+From [package.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/package.json):
 
-## Step 5: Configure Your IDE
-
-### For Cursor
-
-1. Open the project:
-   ```bash
-   cursor .
-   ```
-
-2. Recommended extensions (Cursor should prompt):
-   - Tailwind CSS IntelliSense
-   - ES7+ React/Redux/React-Native snippets
-   - ESLint
-   - Prettier
-
-3. Enable Cursor features:
-   - Cmd+K: For inline code generation
-   - Cmd+L: For chat
-   - Composer mode: For multi-file edits
-
-### For VS Code
-
-1. Open the project:
-   ```bash
-   code .
-   ```
-
-2. Install recommended extensions (VS Code should prompt)
-
-3. Configure Prettier:
-   - Set as default formatter
-   - Enable "Format on Save"
-
----
-
-## Step 6: MCP Setup (For AI-Assisted Development)
-
-### What is MCP?
-Model Context Protocol allows AI agents (Claude) to interact with your filesystem, GitHub, and terminal.
-
-### Configure Claude Desktop
-
-1. **Install Claude Desktop**
-   - Download from https://claude.ai/download
-
-2. **Create MCP Config File**
-   ```bash
-   # macOS
-   mkdir -p ~/Library/Application\ Support/Claude
-   touch ~/Library/Application\ Support/Claude/claude_desktop_config.json
-   ```
-
-3. **Add Configuration**
-   Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
-   
-   ```json
-   {
-     "mcpServers": {
-       "filesystem": {
-         "command": "npx",
-         "args": [
-           "-y",
-           "@modelcontextprotocol/server-filesystem",
-           "/Users/YOUR_USERNAME/path/to/fittest.ai"
-         ]
-       },
-       "github": {
-         "command": "npx",
-         "args": ["-y", "@modelcontextprotocol/server-github"],
-         "env": {
-           "GITHUB_PERSONAL_ACCESS_TOKEN": "your_token_here"
-         }
-       },
-       "shell": {
-         "command": "npx",
-         "args": ["-y", "@mkusaka/mcp-shell-server"]
-       }
-     }
-   }
-   ```
-
-4. **Replace Placeholders**
-   - `YOUR_USERNAME`: Your macOS username
-   - `your_token_here`: Your GitHub Personal Access Token (create at https://github.com/settings/tokens)
-
-5. **Restart Claude Desktop**
-   - Quit completely (Cmd+Q)
-   - Reopen
-
-6. **Verify MCP is Working**
-   - Look for 🔨 hammer icon in Claude Desktop (bottom left)
-   - Ask Claude: "List my files" - it should show your project files
-
----
-
-## Project Structure Overview
-
-After setup, you should have:
-
-```
-fittest.ai/
-├── docs/                     # Documentation (you are here!)
-│   ├── training-context.md   # Sports science knowledge
-│   ├── ai-agent-context.md   # AI prompt templates
-│   ├── SETUP.md              # This file
-│   └── ...
-├── src/
-│   ├── App.tsx               # Main app component
-│   ├── main.tsx              # Entry point
-│   ├── components/           # Shared components
-│   │   └── ui/               # shadcn components
-│   ├── lib/                  # Utilities
-│   └── ...
-├── package.json              # Dependencies
-├── tsconfig.json             # TypeScript config
-├── tailwind.config.js        # Tailwind config
-└── vite.config.ts            # Vite config
-```
-
----
-
-## Common Commands
-
-### Development
 ```bash
-npm run dev              # Start dev server (http://localhost:5174)
-npm run build            # Build for production
-npm run preview          # Preview production build
+npm run dev
+npm run build
+npm run lint
+npm run preview
 ```
 
-### Code Quality
-```bash
-npm run lint             # Run ESLint
-npm run type-check       # TypeScript type checking
-```
+What each script does:
 
-### Testing (Future)
-```bash
-npm test                 # Run tests (will be added)
-```
+- `dev`: starts the Vite dev server
+- `build`: runs `tsc -b` and creates a production build
+- `lint`: runs ESLint against the project
+- `preview`: serves the production build locally
 
----
+There is no checked-in script for tests, Playwright, Supabase CLI, or standalone type-checking.
+
+## Environment Variables
+
+There is no checked-in `.env.example`.
+
+The current codebase does not reference:
+
+- `import.meta.env`
+- `process.env`
+- any Supabase keys or URLs
+
+Current setup requirement: no environment variables are needed.
+
+## Auth And Supabase
+
+The current repo does not include:
+
+- Supabase client initialization
+- auth providers or session management
+- database migrations
+- `supabase/functions`
+
+If you need any of those, you will be introducing new architecture, not wiring up existing code.
+
+## Testing Reality
+
+The current repo does not include:
+
+- `playwright.config.ts`
+- a `tests/` directory
+- Vitest, Jest, or React Testing Library dependencies
+
+Current verification options are:
+
+- `npm run lint`
+- `npm run build`
+- manual browser testing via `npm run dev`
+
+## Recommended First Read
+
+Before changing code, read:
+
+1. [package.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/package.json)
+2. [src/App.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/App.tsx)
+3. [src/main.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/main.tsx)
+4. [vite.config.ts](/Users/ruben/conductor/workspaces/fittest.ai/dublin/vite.config.ts)
+5. [components.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/components.json)
+6. [CLAUDE.md](/Users/ruben/conductor/workspaces/fittest.ai/dublin/CLAUDE.md)
 
 ## Troubleshooting
 
-### Issue: `npm install` fails
+If `npm install` fails:
 
-**Solution 1**: Clear cache and retry
-```bash
-npm cache clean --force
-rm -rf node_modules package-lock.json
-npm install
-```
+- make sure Node and npm are installed and on your `PATH`
+- remove `node_modules` and retry if a previous install was interrupted
+- upgrade Node to `20.19+` or `22.12+` if you see Vite or ESLint engine/runtime errors
 
-**Solution 2**: Verify Node version
-```bash
-node -v  # Must satisfy ^20.19.0 || >=22.12.0
-nvm use
-npm install
-```
+If `npm run dev` starts but the page is blank:
 
-### Issue: Port 5174 already in use
-
-**Solution**: Kill the process or use a different port
-```bash
-# Kill process on port 5174
-lsof -ti:5174 | xargs kill -9
-
-# Or run on different port
-npm run dev -- --port 3000
-```
-
-### Issue: Tailwind styles not working
-
-**Solution 1**: Restart dev server
-```bash
-# Ctrl+C to stop, then:
-npm run dev
-```
-
-**Solution 2**: Clear Vite cache
-```bash
-rm -rf node_modules/.vite
-npm run dev
-```
-
-### Issue: MCP not working in Claude Desktop
-
-**Solution**:
-1. Check config file location is correct
-2. Verify JSON syntax (use JSONLint.com)
-3. Ensure file paths are absolute (not relative)
-4. Restart Claude Desktop completely (Cmd+Q then reopen)
-5. Check for 🔨 icon in Claude Desktop interface
-
-### Issue: TypeScript errors in IDE
-
-**Solution**: Restart TypeScript server
-- **Cursor/VS Code**: Cmd+Shift+P → "TypeScript: Restart TS Server"
-
----
-
-## Environment Variables (Future)
-
-Currently, no environment variables are needed for local development.
-
-When we add Supabase (Phase 2), we'll need:
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_ANON_KEY`
-
-These will be documented in a `.env.example` file when needed.
-
----
-
-## What's Next?
-
-After successful setup:
-
-1. **Read the docs**:
-   - `docs/ARCHITECTURE.md` - Understand system design
-   - `docs/training-context.md` - Learn the domain
-   - `docs/ai-agent-context.md` - See how AI assists development
-
-2. **Explore the code**:
-   - Look at `src/App.tsx` - simple React component
-   - Check `src/components/ui/button.tsx` - shadcn component example
-   - Review `vite.config.ts` - path aliases configuration
-
-3. **Make your first change**:
-   - Edit `src/App.tsx`
-   - See hot reload in action
-   - Commit with a good message
-
-4. **Use AI assistance**:
-   - Open Claude Desktop
-   - Ask it to explain files
-   - Have it generate components
-   - Let it help with refactoring
-
----
-
-## Getting Help
-
-- **Documentation**: Check `/docs` folder
-- **Issues**: Open a GitHub issue
-- **Questions**: Ask in GitHub Discussions (when enabled)
-- **AI Help**: Use Claude Desktop with MCP configured
-
----
-
-## Setup Checklist
-
-Before starting development, verify:
-
-- [ ] Node v24+ installed and active (`node -v`)
-- [ ] Dependencies installed (`node_modules/` exists)
-- [ ] Dev server runs successfully (`npm run dev`)
-- [ ] Can see app in browser (http://localhost:5174)
-- [ ] IDE configured with extensions
-- [ ] MCP working in Claude Desktop (optional but recommended)
-- [ ] Can make changes and see hot reload
-
-**All checked? You're ready to build! 🚀**
-
----
-
-## Notes
-
-- This setup is for **local development only**
-- Production deployment will be covered in Phase 4
-- Supabase setup will be added in Phase 2
-- Setup time: ~15-30 minutes for first time
-
-**Last updated**: January 2026
+- inspect the browser console
+- verify [src/main.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/main.tsx) still mounts `App`
+- verify [src/App.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/App.tsx) still exports a default component
