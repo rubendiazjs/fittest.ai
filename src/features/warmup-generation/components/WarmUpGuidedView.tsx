@@ -161,7 +161,6 @@ export function WarmUpGuidedView({
           {/* Drill execution card */}
           <DrillExecutionCard
             drill={drill}
-            phaseLabel={currentDrillRef.phase.phase_label}
             phase={phase.phase}
             onVideoClick={handleVideoClick}
           />

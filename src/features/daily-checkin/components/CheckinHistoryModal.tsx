@@ -31,10 +31,11 @@ function formatResponseValue(
     case 'yes_no':
       return formatSelectValue(value as string)
     case 'multi_select':
-    case 'body_map':
+    case 'body_map': {
       const arr = value as string[]
       if (!arr?.length) return 'Ninguno'
       return arr.map(formatSelectValue).join(', ')
+    }
     case 'text':
       return (value as string) || 'Sin respuesta'
     default:

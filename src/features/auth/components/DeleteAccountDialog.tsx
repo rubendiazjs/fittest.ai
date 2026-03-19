@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Loader2, AlertTriangle } from 'lucide-react'
-import { useAuth } from '../AuthProvider'
+import { useAuth } from '../useAuth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'

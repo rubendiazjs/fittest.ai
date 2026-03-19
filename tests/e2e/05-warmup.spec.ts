@@ -132,7 +132,7 @@ test.describe('Warmup — generation & guided view', () => {
     await expect(page.getByText('Sentadilla con rotación de tronco')).toBeVisible()
   })
 
-  test('should start guided warmup view', async ({ page }) => {
+  test('should start guided warmup view', async () => {
     await dashboard.warmupButton.click()
     await warmup.expectOverviewVisible()
 
@@ -152,7 +152,7 @@ test.describe('Warmup — generation & guided view', () => {
     await warmup.navigateAllDrills()
   })
 
-  test('should show completion screen after all drills', async ({ page }) => {
+  test('should show completion screen after all drills', async () => {
     await dashboard.warmupButton.click()
     await warmup.expectOverviewVisible()
 
@@ -163,7 +163,7 @@ test.describe('Warmup — generation & guided view', () => {
     await warmup.expectCompletionScreen()
   })
 
-  test('should exit guided view back to overview', async ({ page }) => {
+  test('should exit guided view back to overview', async () => {
     await dashboard.warmupButton.click()
     await warmup.expectOverviewVisible()
 
