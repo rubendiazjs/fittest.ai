@@ -16,5 +16,6 @@ export interface AuthContextValue extends AuthState {
   signUp: (email: string, password: string) => Promise<{ confirmEmail: boolean }>
   signOut: () => Promise<void>
   deleteAccount: () => Promise<void>
+  selectRole: (role: UserRole) => Promise<void>
   refreshRole: () => Promise<void>
 }

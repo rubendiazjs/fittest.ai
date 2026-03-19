@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Loader2, CheckCircle2 } from 'lucide-react'
-import { AuthProvider, useAuth, LoginPage } from '@/features/auth'
+import { Button } from '@/components/ui/button'
+import { AuthProvider, useAuth, LoginPage, RoleSelectionPage } from '@/features/auth'
+import { CoachDashboard, CoachOnboarding, useCoachProfile } from '@/features/coach-dashboard'
 import { OnboardingWizard, ProfileDashboard } from '@/features/player-onboarding'
 import { usePlayerProfile } from '@/features/player-onboarding/hooks'
 import {
@@ -27,7 +29,16 @@ const queryClient = new QueryClient({
   },
 })
 
-function AppContent() {
+function FullScreenLoader({ message }: { message?: string }) {
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center gap-3">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      {message && <p className="text-sm text-muted-foreground">{message}</p>}
+    </div>
+  )
+}
+
+function AthleteApp() {
   const { data: profile, isLoading, error } = usePlayerProfile()
   const [forceOnboarding, setForceOnboarding] = useState(false)
   const [checkinDismissed, setCheckinDismissed] = useState(false)
@@ -43,11 +54,7 @@ function AppContent() {
 
   // Loading state
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    )
+    return <FullScreenLoader />
   }
 
   // Error state (rare, but handle gracefully)
@@ -130,6 +137,61 @@ function AppContent() {
   return <OnboardingWizard />
 }
 
+function CoachApp() {
+  const { data, isLoading, error } = useCoachProfile()
+
+  if (isLoading) {
+    return <FullScreenLoader message="Preparando el espacio del coach..." />
+  }
+
+  if (error) {
+    throw error
+  }
+
+  if (!data?.profile) {
+    return <CoachOnboarding schemaReady={data?.schemaReady ?? true} />
+  }
+
+  return <CoachDashboard profile={data.profile} />
+}
+
+function AdminPlaceholder() {
+  const { signOut } = useAuth()
+
+  return (
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="max-w-xl space-y-4 text-center">
+        <h1 className="text-3xl font-semibold tracking-tight">Rol admin detectado</h1>
+        <p className="text-sm text-muted-foreground">
+          La app todavía no tiene una experiencia de administración. El flujo de athlete y el nuevo
+          flujo de coach quedan separados, pero admin sigue pendiente.
+        </p>
+        <Button variant="outline" onClick={() => signOut()}>
+          Cerrar sesión
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+function AuthenticatedApp() {
+  const { role } = useAuth()
+
+  if (!role) {
+    return <RoleSelectionPage />
+  }
+
+  if (role === 'athlete') {
+    return <AthleteApp />
+  }
+
+  if (role === 'coach') {
+    return <CoachApp />
+  }
+
+  return <AdminPlaceholder />
+}
+
 // Detect if the user just arrived from an email confirmation link
 const isEmailConfirmRedirect = window.location.search.includes('code=')
 
@@ -149,9 +211,7 @@ function AuthGate() {
     }
 
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <FullScreenLoader />
     )
   }
 
@@ -159,7 +219,7 @@ function AuthGate() {
     return <LoginPage />
   }
 
-  return <AppContent />
+  return <AuthenticatedApp />
 }
 
 function App() {
