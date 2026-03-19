@@ -1,0 +1,70 @@
+{
+  "success": true,
+  "warmup": {
+    "id": null,
+    "title": "Calentamiento Pre-Partido",
+    "duration_minutes": 8,
+    "phases": [
+      {
+        "phase": "raise",
+        "phase_label": "Elevar",
+        "timestamp": "0:00–4:00",
+        "drills": [
+          {
+            "name": "Trote suave con movilidad de hombros",
+            "duration": "60 segundos",
+            "intensity": 3,
+            "coaching_cues": ["Mantén una postura erguida", "Respira de forma controlada"],
+            "common_mistake": "Empezar demasiado rápido",
+            "video_search_query": "padel warm up light jog shoulder mobility",
+            "execution_steps": [
+              "Comienza trotando suavemente en el sitio",
+              "Añade círculos de hombros hacia delante",
+              "Cambia a círculos hacia atrás",
+              "Termina con brazos extendidos arriba"
+            ],
+            "objective": "Elevar la temperatura corporal y preparar las articulaciones del tren superior",
+            "expected_sensation_during": "Ligero aumento del ritmo cardíaco",
+            "expected_sensation_after": "Sensación de calor en los músculos",
+            "rounds": 1,
+            "rest_seconds": 0
+          }
+        ]
+      },
+      {
+        "phase": "activate",
+        "phase_label": "Activar",
+        "timestamp": "4:00–8:00",
+        "drills": [
+          {
+            "name": "Sentadilla con rotación de tronco",
+            "duration": "10 repeticiones cada lado",
+            "intensity": 5,
+            "coaching_cues": ["Rodillas alineadas con los pies", "Gira desde la cadera"],
+            "common_mistake": "Dejar caer las rodillas hacia dentro",
+            "video_search_query": "squat with trunk rotation padel warmup",
+            "execution_steps": [
+              "Colócate con los pies al ancho de hombros",
+              "Baja a posición de sentadilla",
+              "Rota el tronco hacia la derecha extendiendo el brazo",
+              "Vuelve al centro y repite hacia la izquierda"
+            ],
+            "objective": "Activar glúteos y core para movimientos laterales en pista",
+            "expected_sensation_during": "Trabajo muscular en piernas y core",
+            "expected_sensation_after": "Piernas y cadera preparadas para moverse",
+            "rounds": 1,
+            "rest_seconds": 0
+          }
+        ]
+      }
+    ],
+    "adaptations": {
+      "cold_conditions": "Duplica el tiempo de la fase Elevar a 8 minutos",
+      "if_irritated": "Reduce la intensidad de los ejercicios y evita movimientos que causen dolor"
+    },
+    "ready_checklist": {
+      "physical_signs": ["Sudoración ligera", "Articulaciones con rango completo"],
+      "neurological_signs": ["Reflejos rápidos", "Concentración activa"]
+    }
+  }
+}

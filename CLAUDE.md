@@ -1,54 +1,106 @@
 # CLAUDE.md
 
-## Read This First
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-This repository is currently a small Vite + React starter, not a full production athlete app.
+## Project Overview
 
-Start with these files, in order:
+Fittest.ai is an AI-powered training platform for padel players. It generates personalized training sessions using Claude Sonnet 4.5 via Supabase Edge Functions. The domain context (sports science, padel-specific movement patterns, periodization) lives in `docs/training-context.md` and `docs/ai-agent-context.md` — read these before working on session generation logic.
 
-1. [package.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/package.json)
-2. [src/App.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/App.tsx)
-3. [src/main.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/main.tsx)
-4. [vite.config.ts](/Users/ruben/conductor/workspaces/fittest.ai/dublin/vite.config.ts)
-5. [components.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/components.json)
-6. [src/index.css](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/index.css)
-7. [docs/ARCHITECTURE.md](/Users/ruben/conductor/workspaces/fittest.ai/dublin/docs/ARCHITECTURE.md)
-8. [docs/SETUP.md](/Users/ruben/conductor/workspaces/fittest.ai/dublin/docs/SETUP.md)
+## Commands
 
-## Current Reality
+```bash
+npm run dev          # Start Vite dev server (localhost:5173)
+npm run build        # TypeScript type-check + Vite production build
+npm run lint         # ESLint
+npm run preview      # Preview production build
+npm run test:e2e     # Playwright end-to-end tests
+```
 
-- The app has one screen in [src/App.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/App.tsx).
-- The UI uses React 19, TypeScript, Tailwind CSS, and shadcn-style primitives.
-- The only shared UI primitive checked in is [src/components/ui/button.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/components/ui/button.tsx).
-- Path alias `@/` resolves to `src` in [vite.config.ts](/Users/ruben/conductor/workspaces/fittest.ai/dublin/vite.config.ts).
-- No environment variables are required by the current code.
+## Tech Stack
 
-## Not Present In This Checkout
+- **Frontend**: React 19 + TypeScript (strict mode) + Vite (rolldown-vite)
+- **UI**: shadcn/ui (Radix primitives) + Tailwind CSS + Lucide icons
+- **Server state**: TanStack Query v5 (no Redux, no Context for data)
+- **Client state**: Zustand (when needed)
+- **Forms**: React Hook Form + Zod v4
+- **Backend**: Supabase (Postgres + Auth + Edge Functions + RLS)
+- **AI**: Claude Sonnet 4.5 called from Supabase Edge Functions (Deno)
+- **MCP**: Supabase MCP server configured in `.mcp.json`
 
-Do not assume any of the following exist unless you add them yourself:
+## Architecture
 
-- Supabase client code
-- Supabase Edge Functions
-- auth flows
-- athlete onboarding
-- daily check-ins
-- warm-up generation
-- Playwright config
-- automated test files
-- `src/features/` modules
+### Feature-based organization
 
-If older docs mention these, treat them as historical or aspirational, not implemented.
+All feature code lives in `src/features/<feature-name>/` with this internal structure:
 
-## Working Rules
+```
+src/features/<feature-name>/
+├── components/    # React components
+├── hooks/         # Custom hooks (business logic + TanStack Query wrappers)
+├── api/           # Supabase query/mutation functions + TanStack Query key factories
+│   ├── queries.ts
+│   ├── mutations.ts
+│   └── keys.ts
+├── types/         # Feature-specific TypeScript types
+├── utils/         # Helper functions
+└── index.ts       # Public API exports
+```
 
-- Trust code over docs when they conflict.
-- Before making nontrivial changes, inspect the target files directly instead of inferring structure from older documentation.
-- Keep changes aligned with the current minimal architecture unless the task explicitly expands scope.
-- If you add new tooling, scripts, env vars, or runtime dependencies, update [README.md](/Users/ruben/conductor/workspaces/fittest.ai/dublin/README.md), [docs/SETUP.md](/Users/ruben/conductor/workspaces/fittest.ai/dublin/docs/SETUP.md), and [docs/ARCHITECTURE.md](/Users/ruben/conductor/workspaces/fittest.ai/dublin/docs/ARCHITECTURE.md) in the same change.
+Current features: `player-onboarding`, `daily-checkin`, `warmup-generation`
 
-## Useful Local Context
+### Data flow
 
-- [.claude/commands/onboard.md](/Users/ruben/conductor/workspaces/fittest.ai/dublin/.claude/commands/onboard.md) describes the repo's expected onboarding workflow for Claude sessions.
-- [.claude/commands/doc-sync.md](/Users/ruben/conductor/workspaces/fittest.ai/dublin/.claude/commands/doc-sync.md) captures the intended documentation-sync workflow.
+Components → custom hooks → TanStack Query → Supabase API functions → Supabase client (`src/lib/supabase.ts`)
 
-Use those command files as helper context, not as a substitute for reading the actual code.
+The Supabase client is a typed singleton using generated types from `src/lib/database.types.ts`.
+
+### Shared code
+
+- `src/components/ui/` — shadcn/ui components (Button, Card, Checkbox, Progress, RadioGroup)
+- `src/lib/utils.ts` — `cn()` classname utility
+- `src/lib/supabase.ts` — typed Supabase client singleton
+- `src/lib/database.types.ts` — auto-generated from Supabase schema
+
+### Edge Functions
+
+Supabase Edge Functions live in `supabase/functions/`. The `generate-warmup` function calls Claude API with player profile + check-in context, returns structured JSON warm-up sessions. These run on Deno, not Node.
+
+### App entry point
+
+`src/App.tsx` checks for an existing player profile. No profile → shows `OnboardingWizard`. Has profile → shows dashboard with daily check-in modal, check-in history, streak indicator, and warm-up generation.
+
+## Path Alias
+
+`@/` maps to `./src` (configured in both `vite.config.ts` and `tsconfig.app.json`).
+
+```typescript
+import { Button } from "@/components/ui/button"
+import { supabase } from "@/lib/supabase"
+```
+
+## Environment Variables
+
+Vite-prefixed (`VITE_`) for browser exposure. See `.env.example`:
+
+```
+VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key-here
+```
+
+## Conventions
+
+- **Commits**: Conventional Commits format — `feat(scope):`, `fix(scope):`, `docs(scope):`, etc.
+- **Branches**: `feature/`, `fix/`, `docs/`, `refactor/`, `test/`
+- **Components**: PascalCase files (`OnboardingWizard.tsx`)
+- **Hooks**: camelCase with `use` prefix (`usePlayerProfile.ts`)
+- **Constants**: SCREAMING_SNAKE_CASE
+- **Styling**: Tailwind utility classes only, no custom CSS files
+- **Types**: Avoid `any`, use `unknown` if type is truly unknown
+- **Feature workflow**: Define in `docs/features/<name>/FEATURE.md` before building
+
+## Domain Context
+
+The training domain is padel (racquet sport). Key references:
+- `docs/training-context.md` — Sports science fundamentals, movement patterns, periodization (in Spanish)
+- `docs/ai-agent-context.md` — Rules for AI-generated sessions (RAMP framework, RPE scaling)
+- Warm-up prompts use the `supabase/functions/generate-warmup/` Edge Function which builds context from player profile + recent check-in data
