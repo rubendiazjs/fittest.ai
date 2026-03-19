@@ -13,9 +13,8 @@ npm run dev          # Start Vite dev server (localhost:5173)
 npm run build        # TypeScript type-check + Vite production build
 npm run lint         # ESLint
 npm run preview      # Preview production build
+npm run test:e2e     # Playwright end-to-end tests
 ```
-
-There is no test runner configured yet. No `npm test` command exists.
 
 ## Tech Stack
 
