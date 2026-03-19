@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { ChevronUp, ChevronDown } from 'lucide-react'
@@ -28,7 +28,10 @@ export function QuestionView({
 }: QuestionViewProps) {
   const progress = ((currentIndex + 1) / totalQuestions) * 100
   const isMulti = question.type === 'multi'
-  const selectedValues = isMulti ? (value as string[] || []) : []
+  const selectedValues = useMemo(
+    () => (isMulti ? ((value as string[] | undefined) ?? []) : []),
+    [isMulti, value]
+  )
   const selectedValue = !isMulti ? (value as string) : undefined
 
   const handleSelect = useCallback((optionValue: string) => {

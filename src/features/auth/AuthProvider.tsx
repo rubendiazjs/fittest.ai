@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import type { AuthState, AuthContextValue, UserRole } from './types'
-import { AuthContext } from './context'
+import { AuthContext } from './AuthContext'
 
 /**
  * AuthProvider manages the Supabase auth lifecycle and role detection.

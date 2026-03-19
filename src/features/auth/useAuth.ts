@@ -1,6 +1,11 @@
 import { useContext } from 'react'
-import { AuthContext } from './context'
+import { AuthContext } from './AuthContext'
 
+/**
+ * Hook to access the current auth context.
+ *
+ * @throws Error if used outside of an AuthProvider
+ */
 export function useAuth() {
   const context = useContext(AuthContext)
   if (context === undefined) {
