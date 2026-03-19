@@ -3,8 +3,8 @@
 ## Prerequisites
 
 ### Required Software
-- **Node.js**: v24+ (we use v24.12.0)
-- **npm**: v11+ (comes with Node)
+- **Node.js**: `20.19.0` or newer in the supported ranges `^20.19.0 || >=22.12.0`
+- **npm**: `10+`
 - **nvm**: Recommended for Node version management
 - **Git**: For version control
 
@@ -31,15 +31,15 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
 nvm --version  # Verify installation
 ```
 
-### Install Node v24
+### Install the repo-pinned Node version
 ```bash
-nvm install 24
-nvm use 24
-nvm alias default 24  # Set as default
+nvm install 20.19.0
+nvm use 20.19.0
+nvm alias default 20.19.0  # Optional
 
 # Verify
-node -v  # Should show v24.12.0 or similar
-npm -v   # Should show v11.6.2 or similar
+node -v  # Should show v20.19.0 or another supported version
+npm -v   # Should show npm 10+
 ```
 
 ---
@@ -60,8 +60,8 @@ git branch  # Should show * main
 ## Step 3: Install Dependencies
 
 ```bash
-# Make sure you're using Node 24
-nvm use 24
+# Make sure you're using the repo-pinned Node version
+nvm use
 
 # Install all dependencies
 npm install
@@ -262,8 +262,8 @@ npm install
 
 **Solution 2**: Verify Node version
 ```bash
-node -v  # Must be v24+
-nvm use 24
+node -v  # Must satisfy ^20.19.0 || >=22.12.0
+nvm use
 npm install
 ```
 
