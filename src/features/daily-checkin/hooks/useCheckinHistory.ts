@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/features/auth'
 import { checkinKeys } from '../api'
+import type { CheckinCategory } from '../types'
 
 export interface CheckinHistoryItem {
   id: string
@@ -26,7 +27,7 @@ interface CheckinHistoryRow {
   checkin_questions: {
     slug: string
     title_es: string
-    category: 'physical_state' | 'performance'
+    category: CheckinCategory
     input_type: string
   }
 }
