@@ -19,10 +19,11 @@ When docs and code disagree, trust the code in this order:
 3. [src/main.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/main.tsx)
 4. [vite.config.ts](/Users/ruben/conductor/workspaces/fittest.ai/dublin/vite.config.ts)
 5. [components.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/components.json)
-6. [docs/SETUP.md](/Users/ruben/conductor/workspaces/fittest.ai/dublin/docs/SETUP.md)
-7. [docs/ARCHITECTURE.md](/Users/ruben/conductor/workspaces/fittest.ai/dublin/docs/ARCHITECTURE.md)
+6. [.nvmrc](/Users/ruben/conductor/workspaces/fittest.ai/dublin/.nvmrc)
+7. [docs/SETUP.md](/Users/ruben/conductor/workspaces/fittest.ai/dublin/docs/SETUP.md)
+8. [docs/ARCHITECTURE.md](/Users/ruben/conductor/workspaces/fittest.ai/dublin/docs/ARCHITECTURE.md)
 
-Some older docs under `docs/` still describe a planned training-product direction. Treat those as historical context unless they are brought back in sync with the code.
+Some docs under `docs/`, including feature-planning material, still describe a broader training-product direction. Treat those as planning or historical context unless they are brought back in sync with the code.
 
 ## Stack
 
@@ -92,9 +93,17 @@ Current testing posture: manual verification in the browser plus `npm run build`
 
 ## Getting Started
 
-Use a modern Node runtime first. In this workspace, `npm run build` and `npm run lint` failed on Node `16.20.2`; the installed Vite toolchain reported a requirement of Node `20.19+` or `22.12+`.
+The repo now pins Node `20.19.0` in [.nvmrc](/Users/ruben/conductor/workspaces/fittest.ai/dublin/.nvmrc), and [package.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/package.json) requires Node `^20.19.0 || >=22.12.0` with npm `10+`. In this workspace, `npm run build` and `npm run lint` failed on Node `16.20.2`, so use a supported runtime before starting.
 
 ```bash
+# Clone the repository
+git clone https://github.com/rubendiazjs/fittest.ai.git
+cd fittest.ai
+
+# Use the repo-pinned Node version
+nvm use
+
+# Install dependencies
 npm install
 npm run dev
 ```

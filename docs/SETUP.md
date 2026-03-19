@@ -4,15 +4,17 @@ This guide reflects the current repository state. It does not assume Supabase, a
 
 ## Prerequisites
 
-- Node.js `20.19+` or `22.12+`
-- npm installed locally
+- Node.js `20.19.0` or newer in the supported ranges `^20.19.0 || >=22.12.0`
+- npm `10+`
+- `nvm` recommended
 - Git
 
-The repo does not declare `engines` in [package.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/package.json), but the installed Vite and ESLint toolchain currently requires a newer Node runtime. In this workspace, Node `16.20.2` produced engine warnings and failed both `npm run lint` and `npm run build`.
+The repo pins Node `20.19.0` in [.nvmrc](/Users/ruben/conductor/workspaces/fittest.ai/dublin/.nvmrc) and declares the same supported runtime family in [package.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/package.json). In this workspace, Node `16.20.2` produced engine warnings and failed both `npm run lint` and `npm run build`.
 
 ## Install
 
 ```bash
+nvm use
 npm install
 ```
 
