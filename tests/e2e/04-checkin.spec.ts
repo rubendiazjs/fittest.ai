@@ -16,7 +16,7 @@ test.describe('Daily Check-in — modal interactions', () => {
       // Mock profiles table (AuthProvider role fetch) — prevents a real Supabase query
       // that can be slow and keep isLoading=true longer than needed.
       await page.route(`${supabaseUrl}/rest/v1/profiles*`, (route) =>
-        route.fulfill({ status: 200, json: [{ role: null }] })
+        route.fulfill({ status: 200, json: [{ role: 'athlete' }] })
       )
 
       // Mock player_profiles GET to return a deterministic profile — makes the dashboard
@@ -162,7 +162,7 @@ test.describe('Daily Check-in — modal interactions', () => {
 
     // Mock profiles table (AuthProvider role fetch)
     await page.route(`${supabaseUrl}/rest/v1/profiles*`, (route) =>
-      route.fulfill({ status: 200, json: [{ role: null }] })
+      route.fulfill({ status: 200, json: [{ role: 'athlete' }] })
     )
 
     // Mock player_profiles GET to return a deterministic profile

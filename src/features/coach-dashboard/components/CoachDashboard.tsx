@@ -1,7 +1,8 @@
-import { CalendarClock, LogOut, ShieldCheck, UserPlus, Users } from 'lucide-react'
+import { CalendarClock, LogOut, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/features/auth'
+import { CoachRosterPanel } from '@/features/roster'
 import type { Tables } from '@/lib/database.types'
 
 type CoachProfile = Tables<'coach_profiles'>
@@ -42,10 +43,6 @@ export function CoachDashboard({ profile }: CoachDashboardProps) {
           </div>
 
           <div className="flex gap-3">
-            <Button disabled>
-              <UserPlus className="mr-2 h-4 w-4" />
-              Invitar atleta
-            </Button>
             <Button variant="outline" onClick={() => signOut()}>
               <LogOut className="mr-2 h-4 w-4" />
               Cerrar sesión
@@ -57,20 +54,6 @@ export function CoachDashboard({ profile }: CoachDashboardProps) {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
-                <Users className="h-5 w-5 text-primary" />
-                Mi roster
-              </CardTitle>
-              <CardDescription>Scaffolding inicial</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm text-muted-foreground">
-              <p>No hay atletas enlazados todavía.</p>
-              <p>La siguiente iteración conectará esta tarjeta a `roster_links` y a la vista de readiness.</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
                 <CalendarClock className="h-5 w-5 text-primary" />
                 Próxima capa
               </CardTitle>
@@ -78,8 +61,8 @@ export function CoachDashboard({ profile }: CoachDashboardProps) {
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-muted-foreground">
               <p>Invitaciones de atleta.</p>
-              <p>Lectura del perfil y check-ins por roster activo.</p>
-              <p>Dashboard coach separado del flujo athlete.</p>
+              <p>Aceptación desde el panel athlete.</p>
+              <p>Base lista para añadir readiness y lectura de check-ins.</p>
             </CardContent>
           </Card>
 
@@ -94,10 +77,27 @@ export function CoachDashboard({ profile }: CoachDashboardProps) {
             <CardContent className="space-y-2 text-sm text-muted-foreground">
               <p>Certificaciones cargadas: {(profile.certifications ?? []).length}</p>
               <p>Verificado: {profile.is_verified ? 'Sí' : 'Pendiente'}</p>
-              <p>Este registro será la fuente del futuro flujo de invitación.</p>
+              <p>Este registro ya puede crear vínculos en `roster_links`.</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <CalendarClock className="h-5 w-5 text-primary" />
+                Operativa actual
+              </CardTitle>
+              <CardDescription>Qué queda fuera de este slice</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm text-muted-foreground">
+              <p>No hay lecturas de readiness todavía.</p>
+              <p>No hay invitaciones por email o link mágico.</p>
+              <p>No hay herramientas de programación grupal aún.</p>
             </CardContent>
           </Card>
         </div>
+
+        <CoachRosterPanel coachId={profile.id} />
       </div>
     </div>
   )
