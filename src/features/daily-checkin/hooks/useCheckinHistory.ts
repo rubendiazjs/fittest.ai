@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
-import { useAuth } from '@/features/auth/AuthProvider'
+import { useAuth } from '@/features/auth'
 import { checkinKeys } from '../api'
 
 export interface CheckinHistoryItem {

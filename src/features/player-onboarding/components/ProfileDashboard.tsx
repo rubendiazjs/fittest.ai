@@ -8,7 +8,7 @@ import {
   WarmUpGuidedView,
   useGenerateWarmUp,
 } from '@/features/warmup-generation'
-import { useAuth } from '@/features/auth/AuthProvider'
+import { useAuth } from '@/features/auth'
 import { DeleteAccountDialog } from '@/features/auth/components'
 import type { Tables } from '@/lib/database.types'
 
