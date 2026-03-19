@@ -29,15 +29,15 @@ interface CheckinResponse {
   question_slug?: string
 }
 
-interface CheckinResponseWithQuestion {
+interface CheckinResponseRow {
   id: string
   question_id: string
   response_value: unknown
   skipped: boolean
   response_date: string
-  checkin_questions?: {
-    slug?: string
-    ai_relevance?: string[]
+  checkin_questions: {
+    slug: string
+    ai_relevance: string[] | null
   } | null
 }
 
@@ -457,7 +457,7 @@ Deno.serve(async (req: Request) => {
       .order("response_date", { ascending: false })
 
     // Transform responses to include slug
-    const responsesWithSlug: CheckinResponse[] = ((checkinResponses || []) as CheckinResponseWithQuestion[])
+    const responsesWithSlug: CheckinResponse[] = ((checkinResponses || []) as CheckinResponseRow[])
       .filter((r) => r.checkin_questions?.ai_relevance?.includes("warmup"))
       .map((r) => ({
         id: r.id,
