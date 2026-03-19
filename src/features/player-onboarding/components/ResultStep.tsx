@@ -1,7 +1,7 @@
 import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
-import { useAuth } from '@/features/auth/AuthProvider'
+import { useAuth } from '@/features/auth'
 import { useCreatePlayerProfile } from '../hooks/useCreatePlayerProfile'
 import { calculateGameExperience, calculateFitness } from '../utils/classification'
 import type { OnboardingFormData, GameExperienceLevel, FitnessLevel } from '../types'

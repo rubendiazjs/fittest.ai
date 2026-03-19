@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
-import { useAuth } from '@/features/auth/AuthProvider'
+import { useAuth } from '@/features/auth'
 import { checkinKeys } from '../api'
 
 export interface CheckinHistoryItem {
@@ -14,6 +14,21 @@ export interface CheckinHistoryItem {
   skipped: boolean
   responseDate: string
   respondedAt: string
+}
+
+interface CheckinHistoryRow {
+  id: string
+  question_id: string
+  response_value: unknown
+  skipped: boolean | null
+  response_date: string
+  responded_at: string
+  checkin_questions: {
+    slug: string
+    title_es: string
+    category: 'physical_state' | 'performance'
+    input_type: string
+  }
 }
 
 /**
@@ -52,7 +67,7 @@ async function fetchCheckinHistory(
     throw new Error(`Failed to fetch check-in history: ${error.message}`)
   }
 
-  return (data ?? []).map((row: any) => ({
+  return ((data ?? []) as CheckinHistoryRow[]).map((row) => ({
     id: row.id,
     questionId: row.question_id,
     questionSlug: row.checkin_questions.slug,

@@ -5,14 +5,12 @@ import { getIntensityColor, buildYouTubeSearchUrl, type WarmUpDrill, type RAMPPh
 
 interface DrillExecutionCardProps {
   drill: WarmUpDrill
-  phaseLabel: string
   phase: RAMPPhase
   onVideoClick?: (query: string) => void
 }
 
 export function DrillExecutionCard({
   drill,
-  phaseLabel: _phaseLabel, // Available for future use
   phase,
   onVideoClick,
 }: DrillExecutionCardProps) {
