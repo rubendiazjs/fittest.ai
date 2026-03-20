@@ -139,6 +139,47 @@ export type Database = {
         }
         Relationships: []
       }
+      coach_profiles: {
+        Row: {
+          bio: string | null
+          certifications: string[] | null
+          created_at: string
+          id: string
+          is_verified: boolean | null
+          organization_name: string | null
+          specialties: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          bio?: string | null
+          certifications?: string[] | null
+          created_at?: string
+          id: string
+          is_verified?: boolean | null
+          organization_name?: string | null
+          specialties?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          bio?: string | null
+          certifications?: string[] | null
+          created_at?: string
+          id?: string
+          is_verified?: boolean | null
+          organization_name?: string | null
+          specialties?: string[] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coach_profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       player_profiles: {
         Row: {
           activity_level: string
@@ -241,6 +282,51 @@ export type Database = {
         }
         Relationships: []
       }
+      roster_links: {
+        Row: {
+          athlete_id: string
+          coach_id: string
+          created_at: string
+          id: string
+          shared_data_access: boolean | null
+          status: Database["public"]["Enums"]["roster_status"]
+          updated_at: string
+        }
+        Insert: {
+          athlete_id: string
+          coach_id: string
+          created_at?: string
+          id?: string
+          shared_data_access?: boolean | null
+          status?: Database["public"]["Enums"]["roster_status"]
+          updated_at?: string
+        }
+        Update: {
+          athlete_id?: string
+          coach_id?: string
+          created_at?: string
+          id?: string
+          shared_data_access?: boolean | null
+          status?: Database["public"]["Enums"]["roster_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roster_links_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "roster_links_coach_id_fkey"
+            columns: ["coach_id"]
+            isOneToOne: false
+            referencedRelation: "coach_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       warmup_sessions: {
         Row: {
           coaching_notes: string | null
@@ -308,6 +394,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      roster_status: "pending" | "active" | "terminated"
       user_role: "athlete" | "coach" | "admin"
     }
     CompositeTypes: {
@@ -436,6 +523,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      roster_status: ["pending", "active", "terminated"],
       user_role: ["athlete", "coach", "admin"],
     },
   },

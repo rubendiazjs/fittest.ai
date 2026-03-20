@@ -29,6 +29,18 @@ interface CheckinResponse {
   question_slug?: string
 }
 
+interface CheckinResponseRow {
+  id: string
+  question_id: string
+  response_value: unknown
+  skipped: boolean
+  response_date: string
+  checkin_questions: {
+    slug: string
+    ai_relevance: string[] | null
+  } | null
+}
+
 interface CheckinContext {
   energy_level?: number
   sleep_quality?: string
@@ -445,9 +457,9 @@ Deno.serve(async (req: Request) => {
       .order("response_date", { ascending: false })
 
     // Transform responses to include slug
-    const responsesWithSlug: CheckinResponse[] = (checkinResponses || [])
-      .filter((r: any) => r.checkin_questions?.ai_relevance?.includes("warmup"))
-      .map((r: any) => ({
+    const responsesWithSlug: CheckinResponse[] = ((checkinResponses || []) as CheckinResponseRow[])
+      .filter((r) => r.checkin_questions?.ai_relevance?.includes("warmup"))
+      .map((r) => ({
         id: r.id,
         question_id: r.question_id,
         response_value: r.response_value,

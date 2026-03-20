@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useAuth } from '@/features/auth/AuthProvider'
+import { useAuth } from '@/features/auth'
 import { fetchPlayerProfile } from '../api/mutations'
 import { profileKeys } from '../api/keys'
 

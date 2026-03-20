@@ -20,7 +20,7 @@ test.describe('Onboarding — wizard flow', () => {
     await page.route(`${supabaseUrl}/rest/v1/profiles*`, (route) =>
       route.fulfill({
         status: 200,
-        json: [{ role: null }],
+        json: [{ role: 'athlete' }],
       })
     )
 
@@ -156,7 +156,7 @@ test.describe('Onboarding — wizard flow', () => {
 
     // Re-mock profiles table (AuthProvider)
     await page.route(`${supabaseUrl}/rest/v1/profiles*`, (route) =>
-      route.fulfill({ status: 200, json: [{ role: null }] })
+      route.fulfill({ status: 200, json: [{ role: 'athlete' }] })
     )
 
     // Re-mock check-in data that dashboard needs

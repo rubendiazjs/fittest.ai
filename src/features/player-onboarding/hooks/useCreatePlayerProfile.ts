@@ -28,7 +28,7 @@ export function useCreatePlayerProfile() {
   return useMutation({
     mutationFn: (profile: PlayerProfileInsert) => createPlayerProfile(profile),
 
-    onSuccess: (_data) => {
+    onSuccess: () => {
       // Invalidate profile queries so any cached data is refreshed
       queryClient.invalidateQueries({
         queryKey: profileKeys.all,

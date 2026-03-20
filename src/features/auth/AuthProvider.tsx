@@ -1,8 +1,7 @@
-import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import type { AuthState, AuthContextValue, UserRole } from './types'
-
-const AuthContext = createContext<AuthContextValue | undefined>(undefined)
+import { AuthContext } from './AuthContext'
 
 /**
  * AuthProvider manages the Supabase auth lifecycle and role detection.
@@ -21,9 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     error: null,
   })
 
-  // Ref to avoid stale closure in refreshRole
-  const userIdRef = useRef<string | null>(null)
-  userIdRef.current = state.user?.id ?? null
+  const userId = state.user?.id ?? null
 
   const fetchUserRole = useCallback(async (userId: string): Promise<UserRole | null> => {
     const { data, error } = await supabase
@@ -45,11 +42,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const refreshRole = useCallback(async () => {
-    const userId = userIdRef.current
     if (!userId) return
     const role = await fetchUserRole(userId)
-    setState((prev) => ({ ...prev, role }))
-  }, [fetchUserRole])
+    setState((prev) => ({ ...prev, role, isLoading: false }))
+  }, [fetchUserRole, userId])
+
+  const selectRole = useCallback(async (role: UserRole) => {
+    if (!userId) throw new Error('No authenticated user')
+
+    const { error } = await supabase
+      .from('profiles')
+      .upsert({
+        id: userId,
+        role,
+        role_selected_at: new Date().toISOString(),
+      })
+
+    if (error) throw error
+
+    setState((prev) => ({ ...prev, role, isLoading: false }))
+  }, [userId])
 
   const signIn = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
@@ -87,7 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           session,
           user: session?.user ?? null,
           role: null,
-          isLoading: false,
+          isLoading: !!session?.user,
           error: null,
         })
 
@@ -108,7 +120,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setTimeout(async () => {
             if (!mounted) return
             const role = await fetchUserRole(userId)
-            if (mounted) setState((prev) => ({ ...prev, role }))
+            if (mounted) setState((prev) => ({ ...prev, role, isLoading: false }))
           }, 0)
         }
       }
@@ -140,21 +152,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     signOut,
     deleteAccount,
+    selectRole,
     refreshRole,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-/**
- * Hook to access the current auth context.
- *
- * @throws Error if used outside of an AuthProvider
- */
-export function useAuth() {
-  const context = useContext(AuthContext)
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider')
-  }
-  return context
 }

@@ -8,8 +8,9 @@ import {
   WarmUpGuidedView,
   useGenerateWarmUp,
 } from '@/features/warmup-generation'
-import { useAuth } from '@/features/auth/AuthProvider'
+import { useAuth } from '@/features/auth'
 import { DeleteAccountDialog } from '@/features/auth/components'
+import { PendingRosterInvitesCard } from '@/features/roster'
 import type { Tables } from '@/lib/database.types'
 
 type PlayerProfile = Tables<'player_profiles'>
@@ -195,6 +196,8 @@ export function ProfileDashboard({ profile, onEditProfile }: ProfileDashboardPro
           <h1 className="text-2xl font-bold">Tu Perfil de Jugador</h1>
           <p className="text-muted-foreground">Listo para entrenar</p>
         </div>
+
+        <PendingRosterInvitesCard athleteId={profile.user_id} />
 
         {/* Profile Summary */}
         <div className="grid gap-4 md:grid-cols-2">

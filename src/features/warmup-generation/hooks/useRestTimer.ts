@@ -32,7 +32,9 @@ export function useRestTimer({
   const onCompleteRef = useRef(onComplete)
 
   // Keep onComplete ref up to date
-  onCompleteRef.current = onComplete
+  useEffect(() => {
+    onCompleteRef.current = onComplete
+  }, [onComplete])
 
   // Cleanup on unmount
   useEffect(() => {
