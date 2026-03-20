@@ -17,8 +17,8 @@ Review code quality in: $ARGUMENTS
 2. **Run automated checks**:
 
    ```bash
-   # TypeScript compilation check
-   npm run type-check
+   # Build + TypeScript compilation check
+   npm run build
 
    # Linting
    npm run lint -- $ARGUMENTS
@@ -104,7 +104,7 @@ Review code quality in: $ARGUMENTS
    - Suggestions: X
    
    ## TypeScript Check
-   [✓ | ✗] Passes type-check
+   [✓ | ✗] Passes build
    
    ## Linting
    [✓ | ✗] Passes lint

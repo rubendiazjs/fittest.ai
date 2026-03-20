@@ -212,9 +212,9 @@ interface TrainerDashboardActivityItem {
 - [ ] Minimal coach dashboard summary source, even if initially scaffolded with zero-state data
 
 ### Documentation Assumptions
-- [ ] `docs/AUTH_INTEGRATION.md` is not present in this workspace, so this feature spec defines the required auth/profile contract directly.
-- [ ] `docs/ROADMAP.md` is not present; the roadmap direction was inferred from `README.md`, `docs/DOCUMENTATION-ROADMAP.md`, and `docs/ARCHITECTURE.md`.
-- [ ] `docs/decisions/002-trainer-database-schema.md` is not present, so no existing schema ADR could be reconciled against this plan.
+- [ ] `docs/planning/AUTH_INTEGRATION.md` is planning material, so this feature spec still needs to define its current implementation slice clearly.
+- [ ] `docs/planning/ROADMAP.md` and `docs/planning/DOCUMENTATION-ROADMAP.md` are planning material, not implementation truth.
+- [ ] `docs/decisions/002-trainer-database-schema.md` should be reconciled before any schema work starts.
 
 ---
 
@@ -291,19 +291,18 @@ interface TrainerDashboardActivityItem {
 ## References
 
 ### Related Documentation
-- `docs/FEATURE-WORKFLOW.md`
-- `docs/FEATURE_TEMPLATE.md`
+- `docs/process/FEATURE-WORKFLOW.md`
+- `docs/templates/FEATURE_TEMPLATE.md`
 - `docs/ARCHITECTURE.md`
-- `docs/DOCUMENTATION-ROADMAP.md`
+- `docs/planning/DOCUMENTATION-ROADMAP.md`
 - `README.md`
 
 ### Related Decisions
 - `docs/decisions/001-use-react-typescript-vite.md`
 
 ### Source Gaps
-- Missing in current workspace: `docs/AUTH_INTEGRATION.md`
-- Missing in current workspace: `docs/ROADMAP.md`
-- Missing in current workspace: `docs/decisions/002-trainer-database-schema.md`
+- Planning docs exist, but they do not define the current runtime behavior.
+- Coach workflow reality still needs implementation-facing documentation once work starts.
 
 ---
 
@@ -312,4 +311,3 @@ interface TrainerDashboardActivityItem {
 ### 2026-03-19: Initial planning spec
 - Selected as the next executable feature because it unlocks the auth, routing, and coach-workflow boundary with the least speculative product surface area.
 - Scoped as a scaffold, not a full coach management system, to keep the first implementation slice buildable.
-

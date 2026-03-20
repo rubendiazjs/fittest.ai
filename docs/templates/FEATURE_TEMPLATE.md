@@ -1,5 +1,7 @@
 # Feature: [Feature Name]
 
+> Status meanings: Planning, In Progress, Review, Complete, or Archived.
+
 **Status:** Planning
 **Priority:** [Critical | High | Medium | Low]
 **Estimated Effort:** [XS | S | M | L | XL]
@@ -128,6 +130,7 @@ Following `.claude/skills/react-ui-patterns/`:
 ### Documentation
 - [ ] Update `training-context.md` with [new concepts]
 - [ ] Update `ai-agent-context.md` with [new patterns]
+- [ ] Update `SETUP.md`, `ARCHITECTURE.md`, `SUPABASE.md`, or `TESTING.md` if the feature changes those areas
 
 ---
 
@@ -191,7 +194,7 @@ How do we know this feature is successful?
 
 ### Related Documentation
 - ADR: [Link to relevant ADR]
-- Architecture: [Section in ARCHITECTURE.md]
+- Architecture: `docs/ARCHITECTURE.md`
 - Domain: [Section in training-context.md]
 
 ### External Resources
@@ -226,7 +229,7 @@ Before marking as "Complete":
 
 **Code Quality:**
 - [ ] Follows CONTRIBUTING.md standards
-- [ ] TypeScript strict mode passes
+- [ ] `npm run build` passes
 - [ ] No console.logs
 - [ ] Proper error handling
 

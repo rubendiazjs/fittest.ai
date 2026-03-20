@@ -1,5 +1,7 @@
 # Product Roadmap: Fittest.ai for Trainers
 
+> Status: Planning. This document is aspirational product direction, not a description of the current implementation.
+
 ## Vision
 To build the premier AI-powered operating system for padel coaches and personal trainers. Fittest.ai aims to automate the science of programming so coaches can focus on the art of coaching, enabling them to scale their impact from 10 to 100+ athletes without compromising personalization.
 
