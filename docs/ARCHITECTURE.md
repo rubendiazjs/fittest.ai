@@ -1,123 +1,74 @@
 # Architecture
 
-This document describes the code that is actually present in this checkout.
+This document describes the current implementation, not future roadmap work.
 
 ## System Summary
 
-The application is a single-page React app with one rendered screen and no backend integration.
+The app is a single-route React client backed by Supabase. It uses:
 
-Current runtime behavior:
+- Supabase Auth for email/password sign-in and sign-up
+- TanStack Query for server-state reads and mutations
+- Feature modules for auth, onboarding, daily check-ins, and warm-up generation
+- Supabase Edge Functions for server-side actions such as warm-up generation and account deletion
 
-- [src/main.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/main.tsx) mounts `App` inside `StrictMode`
-- [src/App.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/App.tsx) renders a centered marketing-style placeholder view
-- the only interaction is a button click that triggers a browser `alert`
+## Runtime Flow
 
-There are no routes, feature modules, API calls, persisted state, or background jobs.
+1. `App` creates a shared `QueryClient` and wraps the tree with `QueryClientProvider` and `AuthProvider`.
+2. `AuthGate` waits for auth state, shows the login page for anonymous users, and shows the app for authenticated users.
+3. `AppContent` loads the current player's profile.
+4. If no profile exists, the user sees `OnboardingWizard`.
+5. If a profile exists, the user sees `ProfileDashboard` and daily check-in UI.
+6. Warm-up generation is triggered from the dashboard and calls the `generate-warmup` Edge Function.
 
-## Stack
-
-- React 19
-- TypeScript
-- Vite configured through [vite.config.ts](/Users/ruben/conductor/workspaces/fittest.ai/dublin/vite.config.ts)
-- `@vitejs/plugin-react`
-- Tailwind CSS
-- `tailwindcss-animate`
-- shadcn/ui conventions configured in [components.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/components.json)
-- Radix Slot, `class-variance-authority`, `clsx`, and `tailwind-merge` for UI primitives
-
-## File-Level Architecture
-
-### Entry
-
-- [src/main.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/main.tsx) is the browser entry point.
-- It imports [src/index.css](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/index.css) and renders `App`.
+## Frontend Structure
 
 ### App Shell
 
-- [src/App.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/App.tsx) is the root UI.
-- It imports [src/components/ui/button.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/components/ui/button.tsx).
-- There is no router and no feature composition layer.
+- `src/App.tsx` owns the top-level auth gate and high-level feature switching.
+- There is no router today. The current app is a single authenticated flow.
 
-### Shared UI
+### Feature Modules
 
-- [src/components/ui/button.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/components/ui/button.tsx) is the only checked-in reusable UI primitive.
-- It follows the standard shadcn pattern:
-  - variant styling via `class-variance-authority`
-  - optional `asChild` rendering via Radix Slot
-  - class merging through [src/lib/utils.ts](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/lib/utils.ts)
+- `src/features/auth/` handles auth context, login UI, and account deletion.
+- `src/features/player-onboarding/` handles the questionnaire, scoring, and profile creation.
+- `src/features/daily-checkin/` handles question selection, response submission, history, and streak UI.
+- `src/features/warmup-generation/` handles warm-up generation, display, and guided progression.
 
-### Styling
+### Shared UI And Utilities
 
-- [src/index.css](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/index.css) defines Tailwind layers and CSS custom properties for the theme tokens.
-- [tailwind.config.js](/Users/ruben/conductor/workspaces/fittest.ai/dublin/tailwind.config.js) enables class-based dark mode and maps the tokenized color system.
-- [src/App.css](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/App.css) exists, but the current app behavior is driven by Tailwind classes in `App.tsx`.
+- `src/components/ui/` contains reusable UI primitives.
+- `src/lib/supabase.ts` creates the typed Supabase client.
+- `src/lib/database.types.ts` is the generated database type source used across features.
 
-### Tooling
+## Data And Backend Boundaries
 
-- [vite.config.ts](/Users/ruben/conductor/workspaces/fittest.ai/dublin/vite.config.ts) defines the React plugin and the `@/` alias to `src`.
-- [eslint.config.js](/Users/ruben/conductor/workspaces/fittest.ai/dublin/eslint.config.js) uses the ESLint flat config format with TypeScript, React Hooks, and React Refresh rules.
-- [components.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/components.json) records the shadcn configuration and aliases.
+### Supabase Client
 
-## Data And State
+The frontend requires `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. The client is initialized once and reused across feature modules.
 
-Current state model:
+### Tables Touched By The Frontend
 
-- no remote data fetching
-- no local persistence
-- no global client state
-- no form state libraries in use
+- `profiles` for role lookup
+- `player_profiles` for onboarding and dashboard data
+- `checkin_questions` for available daily questions
+- `checkin_responses` for user responses and history
+- `checkin_streaks` for streak state
 
-The only dynamic behavior in the UI is an inline click handler in [src/App.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/App.tsx).
+### Edge Functions
 
-## Environment And External Services
-
-Current architecture has no external runtime dependencies beyond the browser bundle.
-
-Not present in the app code:
-
-- env var reads
-- Supabase clients
-- auth/session logic
-- server functions
-- analytics
-- background jobs
-
-Because there is no checked-in `.env.example`, env setup is intentionally empty at the moment.
+- `generate-warmup` reads the authenticated user, loads the player profile plus recent check-ins, calls Anthropic, and returns structured warm-up data.
+- `delete-account` deletes the authenticated auth user with a service-role client.
 
 ## Testing And Quality Gates
 
-Configured quality gates:
-
 - `npm run lint`
 - `npm run build`
+- `npm run test:e2e`
 
-Not configured:
+The automated test suite is Playwright-based and lives under `tests/e2e/`. There is no unit-test runner configured in `package.json` today.
 
-- unit tests
-- integration tests
-- Playwright
-- CI-specific test commands
+## Current Boundaries And Caveats
 
-## Repository Reality Versus Older Docs
-
-Several older docs describe a larger product direction around training generation, athlete workflows, and Supabase. Those flows are not represented in the current source tree.
-
-For implementation work, trust the code and these files first:
-
-1. [package.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/package.json)
-2. [src/App.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/App.tsx)
-3. [src/main.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/main.tsx)
-4. [vite.config.ts](/Users/ruben/conductor/workspaces/fittest.ai/dublin/vite.config.ts)
-5. [components.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/components.json)
-
-## Implications For Future Changes
-
-Any work that adds the following will be introducing new architecture and should update the docs in the same change:
-
-- routing
-- feature folders
-- auth
-- Supabase integration
-- environment variables
-- automated tests
-- server-side logic
+- The app already fetches `profiles.role`, but the main UI flow does not yet branch into separate coach/admin products.
+- There is no client-side router yet.
+- Planning docs under `docs/planning/` may describe future coach workflows that are not implemented in the current app shell.

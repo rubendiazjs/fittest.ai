@@ -84,8 +84,8 @@ rm -rf node_modules/.vite
 # Restart dev server
 npm run dev
 
-# Type check
-npm run type-check
+# Build + type check
+npm run build
 
 # Build to catch build-only errors
 npm run build
@@ -98,7 +98,7 @@ npm run build
 1. **Create failing test case** - Captures the bug behavior (when we add tests)
 2. **Implement single fix** - Address root cause, not symptoms
 3. **Verify fix works** - Confirms fix works
-4. **Run type check** - `npm run type-check` - Ensure no TypeScript errors
+4. **Run build** - `npm run build` - Ensure TypeScript and production build pass
 5. **Run linting** - `npm run lint` - Ensure code quality
 6. **If fix fails, STOP** - Re-evaluate hypothesis
 
@@ -229,8 +229,8 @@ Stop immediately if you catch yourself thinking:
 
 ### Command Line
 ```bash
-# Type checking
-npm run type-check
+# Build + type checking
+npm run build
 
 # Linting
 npm run lint
@@ -258,7 +258,7 @@ Before claiming a bug is fixed:
 - [ ] Root cause identified and documented
 - [ ] Hypothesis formed and tested
 - [ ] Fix addresses root cause, not symptoms
-- [ ] TypeScript compiles: `npm run type-check`
+- [ ] Build passes: `npm run build`
 - [ ] Linting passes: `npm run lint`
 - [ ] No console errors in browser
 - [ ] No "quick fix" rationalization used

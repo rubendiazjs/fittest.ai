@@ -1,22 +1,37 @@
 # Setup
 
-This guide reflects the current repository state. It does not assume Supabase, auth, Playwright, or feature modules because those are not present in this checkout.
+This guide is for the app that exists today: Supabase auth, onboarding, daily check-ins, and warm-up generation.
 
 ## Prerequisites
 
-- Node.js `20.19.0` or newer in the supported ranges `^20.19.0 || >=22.12.0`
+- Node.js `20.19.0`
 - npm `10+`
-- `nvm` recommended
-- Git
+- `nvm`
+- Access to a Supabase project with the expected schema and auth enabled
 
-The repo pins Node `20.19.0` in [.nvmrc](/Users/ruben/conductor/workspaces/fittest.ai/dublin/.nvmrc) and declares the same supported runtime family in [package.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/package.json). In this workspace, Node `16.20.2` produced engine warnings and failed both `npm run lint` and `npm run build`.
+The repo pins Node in `.nvmrc` and declares the same engine range in `package.json`.
 
-## Install
+## Install Dependencies
 
 ```bash
 nvm use
 npm install
 ```
+
+## Configure Frontend Environment
+
+Create a local env file from the example:
+
+```bash
+cp .env.example .env
+```
+
+Required variables:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+
+The app throws on startup if either value is missing.
 
 ## Run The App
 
@@ -24,95 +39,43 @@ npm install
 npm run dev
 ```
 
-Open the local URL printed by Vite. On a typical machine this is `http://localhost:5173`.
+Open the local URL printed by Vite, usually `http://localhost:5173`.
 
-What you should see:
+Expected high-level flow:
 
-- a centered `Fittest.ai` title
-- the subtitle `Your agentic development playground`
-- a `Click Me` button
-- a browser alert when the button is pressed
+1. Unauthenticated users land on the login screen.
+2. Authenticated users without a `player_profiles` row are sent into onboarding.
+3. Authenticated users with a profile land on the dashboard.
+4. Users who have not checked in today may see the daily check-in modal.
 
-The UI is defined in [src/App.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/App.tsx).
-
-## Available Scripts
-
-From [package.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/package.json):
+## Verification Commands
 
 ```bash
-npm run dev
-npm run build
 npm run lint
-npm run preview
+npm run build
 ```
 
-What each script does:
+For E2E setup and Playwright commands, see [TESTING.md](./TESTING.md).
 
-- `dev`: starts the Vite dev server
-- `build`: runs `tsc -b` and creates a production build
-- `lint`: runs ESLint against the project
-- `preview`: serves the production build locally
+## Supabase Notes
 
-There is no checked-in script for tests, Playwright, Supabase CLI, or standalone type-checking.
-
-## Environment Variables
-
-There is no checked-in `.env.example`.
-
-The current codebase does not reference:
-
-- `import.meta.env`
-- `process.env`
-- any Supabase keys or URLs
-
-Current setup requirement: no environment variables are needed.
-
-## Auth And Supabase
-
-The current repo does not include:
-
-- Supabase client initialization
-- auth providers or session management
-- database migrations
-- `supabase/functions`
-
-If you need any of those, you will be introducing new architecture, not wiring up existing code.
-
-## Testing Reality
-
-The current repo does not include:
-
-- `playwright.config.ts`
-- a `tests/` directory
-- Vitest, Jest, or React Testing Library dependencies
-
-Current verification options are:
-
-- `npm run lint`
-- `npm run build`
-- manual browser testing via `npm run dev`
-
-## Recommended First Read
-
-Before changing code, read:
-
-1. [package.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/package.json)
-2. [src/App.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/App.tsx)
-3. [src/main.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/main.tsx)
-4. [vite.config.ts](/Users/ruben/conductor/workspaces/fittest.ai/dublin/vite.config.ts)
-5. [components.json](/Users/ruben/conductor/workspaces/fittest.ai/dublin/components.json)
-6. [CLAUDE.md](/Users/ruben/conductor/workspaces/fittest.ai/dublin/CLAUDE.md)
+- Frontend setup details are in [SUPABASE.md](./SUPABASE.md).
+- This repo includes generated database types and Edge Functions, but this guide does not assume a full local Supabase bootstrap workflow.
 
 ## Troubleshooting
 
-If `npm install` fails:
+If the app fails immediately on load:
 
-- make sure Node and npm are installed and on your `PATH`
-- remove `node_modules` and retry if a previous install was interrupted
-- upgrade Node to `20.19+` or `22.12+` if you see Vite or ESLint engine/runtime errors
+- Verify `.env` contains `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+- Check that the Supabase project is reachable.
+- Confirm the anon key belongs to the same project as the URL.
 
-If `npm run dev` starts but the page is blank:
+If auth works but the app hangs on loading:
 
-- inspect the browser console
-- verify [src/main.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/main.tsx) still mounts `App`
-- verify [src/App.tsx](/Users/ruben/conductor/workspaces/fittest.ai/dublin/src/App.tsx) still exports a default component
+- Check the browser console for Supabase errors.
+- Verify the signed-in user can read from `profiles` and `player_profiles`.
+
+If the dashboard never appears after sign-in:
+
+- Confirm a `player_profiles` row exists for the authenticated user.
+- If no profile exists, the app should send the user into onboarding instead.

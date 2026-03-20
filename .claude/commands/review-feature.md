@@ -30,8 +30,8 @@ Review feature for completion: $ARGUMENTS
 4. **Run automated checks**:
 
    ```bash
-   # Type checking
-   npm run type-check
+   # Build + type checking
+   npm run build
    
    # Linting
    npm run lint -- src/features/[feature-name]

@@ -24,7 +24,7 @@ Create a new feature: $ARGUMENTS
 3. **Copy and customize feature template**:
 
    ```bash
-   cp docs/FEATURE_TEMPLATE.md docs/features/[feature-name]/FEATURE.md
+   cp docs/templates/FEATURE_TEMPLATE.md docs/features/[feature-name]/FEATURE.md
    ```
 
    Update the following in FEATURE.md:
@@ -75,8 +75,8 @@ Create a new feature: $ARGUMENTS
    6. Start implementing in src/features/[feature-name]/
    
    References:
-   - Workflow: docs/FEATURE-WORKFLOW.md
-   - Template: docs/FEATURE_TEMPLATE.md
+   - Workflow: docs/process/FEATURE-WORKFLOW.md
+   - Template: docs/templates/FEATURE_TEMPLATE.md
    - Contributing: docs/CONTRIBUTING.md
    ```
 

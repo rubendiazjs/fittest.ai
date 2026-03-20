@@ -182,7 +182,7 @@ Existing `player_profiles` rows reference `auth.users` via `user_id`. The migrat
 1. Create the `profiles` table, enums, and `handle_new_user` trigger.
 2. Backfill `profiles` from existing `auth.users`. Existing users with a `player_profiles` row get `role = 'athlete'` and `role_selected_at = now()`. Users without a profile row get `role = NULL` (will see role selection on next login).
 3. `player_profiles.user_id` already stores the same UUID as `profiles.id`, so existing joins work without changing the FK target.
-4. `coach_profiles`, `roster_links`, and cross-table RLS policies can be applied in a later migration (see [AUTH_INTEGRATION Phase 3](../AUTH_INTEGRATION.md#phase-3-coach-system)).
+4. `coach_profiles`, `roster_links`, and cross-table RLS policies can be applied in a later migration (see [AUTH_INTEGRATION Phase 3](../planning/AUTH_INTEGRATION.md#phase-3-coach-system)).
 
 No changes to `player_profiles` schema are required — only new RLS policies are layered on.
 

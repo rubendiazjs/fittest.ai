@@ -1,5 +1,7 @@
 # Auth & Role Management Integration Plan
 
+> Status: Planning. This document is roadmap material for coach/role expansion, not a description of the current app shell.
+
 ## 1. Overview
 Fittest.ai is transitioning from a single-user mock authentication system to a professional, multi-tenant platform. This plan outlines the technical and architectural changes required to support **Athletes** and **Coaches** as distinct user roles with unique permissions and workflows.
 
